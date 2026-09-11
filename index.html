@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZZH · 作品集</title>
+<link rel="preconnect" href="https://miaoda.feishu.cn">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap">
+<style>
+  :root{
+    --bg:#faf8f5;
+    --bg-deep:#f1ede6;
+    --ink:#1b1b1b;
+    --ink-soft:#55524c;
+    --ink-faint:#9a948a;
+    --line:#e4ded4;
+    --accent:#b08968;
+    --accent-deep:#8a6a4d;
+    --card:#ffffff;
+    --shadow:0 1px 2px rgba(27,27,27,.04),0 10px 30px rgba(27,27,27,.06);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+
+  /* ===== 顶部导航 ===== */
+  header{
+    position:sticky;top:0;z-index:100;
+    background:rgba(250,248,245,.86);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:1180px;margin:0 auto;padding:0 28px;
+    height:64px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{font-family:"Noto Serif SC",serif;font-weight:700;font-size:22px;letter-spacing:2px}
+  .brand span{color:var(--accent-deep)}
+  .nav-links{display:flex;align-items:center;gap:6px}
+  .nav-links a{
+    padding:8px 16px;font-size:14px;color:var(--ink-soft);
+    border-radius:8px;transition:.2s;position:relative;
+  }
+  .nav-links a:hover{color:var(--ink);background:var(--bg-deep)}
+  .nav-links a.active{color:var(--ink);font-weight:500}
+  .nav-links a.active::after{
+    content:"";position:absolute;left:16px;right:16px;bottom:2px;height:2px;background:var(--accent);
+  }
+  .nav-admin{
+    margin-left:8px;display:inline-flex;align-items:center;gap:6px;
+    background:var(--ink);color:#fff;border:none;cursor:pointer;
+    padding:8px 18px;border-radius:99px;font-size:13px;font-family:inherit;
+    transition:.2s;
+  }
+  .nav-admin:hover{background:var(--accent-deep)}
+  .nav-admin svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ===== 视图容器 ===== */
+  .view{display:none;max-width:1180px;margin:0 auto;padding:40px 28px 90px}
+  .view.active{display:block;animation:fade .4s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* ===== 通用标题 ===== */
+  .page-head{margin-bottom:34px}
+  .page-head .kicker{font-size:12px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
+  .page-head h1{font-family:"Noto Serif SC",serif;font-size:38px;font-weight:600;letter-spacing:1px}
+  .page-head p{color:var(--ink-soft);margin-top:10px;max-width:560px;font-weight:300;font-size:15px}
+
+  /* ===== 首页 ===== */
+  .hero{padding:70px 0 30px;border-bottom:1px solid var(--line);margin-bottom:46px}
+  .hero .kicker{font-size:13px;letter-spacing:4px;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+  .hero h1{font-family:"Noto Serif SC",serif;font-size:56px;line-height:1.15;font-weight:600;letter-spacing:2px}
+  .hero h1 em{font-style:normal;color:var(--accent-deep)}
+  .hero p{color:var(--ink-soft);font-weight:300;max-width:520px;margin-top:20px;font-size:16px}
+  .hero-cta{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:12px 28px;border-radius:99px;font-size:14px;cursor:pointer;transition:.25s;
+    border:1px solid transparent;font-family:inherit;
+  }
+  .btn-dark{background:var(--ink);color:#fff}
+  .btn-dark:hover{background:var(--accent-deep)}
+  .btn-line{border-color:var(--ink);color:var(--ink);background:transparent}
+  .btn-line:hover{background:var(--ink);color:#fff}
+
+  /* 首页精选 */
+  .section-title{display:flex;align-items:baseline;justify-content:space-between;margin:46px 0 22px}
+  .section-title h2{font-family:"Noto Serif SC",serif;font-size:24px;font-weight:600}
+  .section-title a{font-size:13px;color:var(--ink-soft);display:inline-flex;align-items:center;gap:5px;transition:.2s}
+  .section-title a:hover{color:var(--accent-deep)}
+
+  .featured-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .f-card{position:relative;border-radius:6px;overflow:hidden;aspect-ratio:3/2;cursor:pointer;background:var(--bg-deep)}
+  .f-card.tall{aspect-ratio:3/4;grid-row:span 2}
+  .f-card img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+  .f-card:hover img{transform:scale(1.05)}
+  .f-card .cap{
+    position:absolute;inset:auto 0 0 0 0;padding:30px 18px 16px;color:#fff;
+    background:linear-gradient(to top,rgba(0,0,0,.55),transparent);
+    opacity:0;transition:.35s;
+  }
+  .f-card:hover .cap{opacity:1}
+  .f-card .cap b{display:block;font-size:14px;font-weight:500}
+  .f-card .cap small{font-size:12px;opacity:.8;font-weight:300}
+
+  /* ===== 图片画廊 ===== */
+  .gallery{columns:3 300px;column-gap:18px}
+  .g-item{
+    break-inside:avoid;margin-bottom:18px;border-radius:6px;overflow:hidden;
+    background:var(--card);cursor:pointer;position:relative;
+    box-shadow:var(--shadow);transition:.3s;
+  }
+  .g-item:hover{transform:translateY(-3px);box-shadow:0 2px 6px rgba(27,27,27,.08),0 18px 40px rgba(27,27,27,.12)}
+  .g-item img{width:100%;transition:.5s}
+  .g-item:hover img{transform:scale(1.03)}
+  .g-item .info{padding:12px 15px 13px;display:flex;justify-content:space-between;align-items:center}
+  .g-item .info b{font-size:13.5px;font-weight:500}
+  .g-item .info span{font-size:12px;color:var(--ink-faint);font-weight:300}
+
+  /* ===== 视频卡片 ===== */
+  .video-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+  .v-card{border-radius:8px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);cursor:pointer;transition:.3s}
+  .v-card:hover{transform:translateY(-3px);box-shadow:0 2px 6px rgba(27,27,27,.08),0 20px 44px rgba(27,27,27,.12)}
+  .v-thumb{position:relative;aspect-ratio:16/9;overflow:hidden}
+  .v-thumb img{width:100%;height:100%;object-fit:cover;transition:.5s}
+  .v-card:hover .v-thumb img{transform:scale(1.05)}
+  .v-play{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:62px;height:62px;border-radius:50%;
+    background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+    display:flex;align-items:center;justify-content:center;transition:.25s;
+    border:1px solid rgba(255,255,255,.4);
+  }
+  .v-card:hover .v-play{background:var(--accent);transform:translate(-50%,-50%) scale(1.08)}
+  .v-play svg{width:22px;height:22px;fill:#fff;margin-left:3px}
+  .v-dur{position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.65);color:#fff;font-size:11.5px;padding:2px 8px;border-radius:4px;font-weight:300}
+  .v-meta{padding:16px 18px 18px}
+  .v-meta h3{font-family:"Noto Serif SC",serif;font-size:16.5px;font-weight:600;margin-bottom:5px}
+  .v-meta p{font-size:13px;color:var(--ink-soft);font-weight:300;line-height:1.6}
+
+  /* ===== 后台管理 ===== */
+  .admin-wrap{display:grid;grid-template-columns:380px 1fr;gap:28px;align-items:start}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:26px;box-shadow:var(--shadow)}
+  .panel h3{font-family:"Noto Serif SC",serif;font-size:17px;font-weight:600;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .form-row{margin-bottom:16px}
+  .form-row label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;font-weight:400}
+  .form-row input,.form-row select,.form-row textarea{
+    width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:7px;
+    font-size:13.5px;font-family:inherit;background:#fff;color:var(--ink);transition:.2s;outline:none;
+  }
+  .form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(176,137,104,.12)}
+  .form-row textarea{resize:vertical;min-height:72px}
+  .seg{display:flex;background:var(--bg-deep);border-radius:8px;padding:4px;gap:4px}
+  .seg button{
+    flex:1;padding:9px;border:none;background:transparent;border-radius:6px;
+    font-size:13px;cursor:pointer;color:var(--ink-soft);transition:.2s;font-family:inherit;
+  }
+  .seg button.on{background:#fff;color:var(--ink);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .upload-box{
+    border:1.5px dashed var(--line);border-radius:8px;padding:26px 14px;text-align:center;
+    color:var(--ink-faint);cursor:pointer;transition:.2s;font-size:13px;
+  }
+  .upload-box:hover{border-color:var(--accent);color:var(--accent-deep)}
+  .upload-box svg{width:26px;height:26px;stroke:var(--ink-faint);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin-bottom:8px}
+  .btn-save{width:100%;margin-top:6px;background:var(--accent);color:#fff;padding:13px;border:none;border-radius:8px;font-size:14px;cursor:pointer;transition:.2s;font-family:inherit}
+  .btn-save:hover{background:var(--accent-deep)}
+
+  .admin-list .item{
+    display:flex;gap:14px;align-items:center;padding:12px;border-radius:8px;transition:.15s;
+  }
+  .admin-list .item:hover{background:var(--bg)}
+  .admin-list .thumb{width:74px;height:50px;border-radius:5px;object-fit:cover;flex-shrink:0}
+  .admin-list .tall-thumb{height:60px}
+  .admin-list .meta{flex:1;min-width:0}
+  .admin-list .meta b{display:block;font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .admin-list .meta small{font-size:12px;color:var(--ink-faint)}
+  .admin-list .ops{display:flex;gap:6px}
+  .op{
+    width:30px;height:30px;border-radius:6px;border:1px solid var(--line);background:#fff;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;color:var(--ink-soft);
+  }
+  .op:hover{color:var(--accent-deep);border-color:var(--accent)}
+  .op.del:hover{color:#c0392b;border-color:#c0392b}
+  .op svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .admin-empty{text-align:center;color:var(--ink-faint);padding:40px 0;font-size:13px;font-weight:300}
+
+  /* ===== Lightbox ===== */
+  .lightbox{
+    position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;display:none;
+    align-items:center;justify-content:center;flex-direction:column;padding:30px;
+  }
+  .lightbox.open{display:flex;animation:fade .3s ease}
+  .lightbox img{max-width:92vw;max-height:80vh;object-fit:contain;border-radius:4px}
+  .lightbox .lb-cap{color:#fff;margin-top:16px;font-size:14px;font-weight:300;letter-spacing:.5px}
+  .lb-close{position:absolute;top:22px;right:28px;background:none;border:none;color:#fff;font-size:34px;cursor:pointer;line-height:1}
+
+  /* ===== Toast ===== */
+  .toast{
+    position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;padding:13px 24px;border-radius:99px;font-size:13.5px;
+    opacity:0;pointer-events:none;transition:.35s;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ===== 页脚 ===== */
+  footer{border-top:1px solid var(--line);padding:34px 28px;text-align:center;color:var(--ink-faint);font-size:12.5px;font-weight:300}
+
+  /* ===== 响应式 ===== */
+  @media(max-width:860px){
+    .hero h1{font-size:38px}
+    .hero{padding:48px 0 24px}
+    .featured-grid{grid-template-columns:repeat(2,1fr)}
+    .video-grid{grid-template-columns:1fr}
+    .admin-wrap{grid-template-columns:1fr}
+    .gallery{columns:2 200px}
+    .nav-links a{padding:8px 10px}
+    .nav-admin{width:38px;padding:8px;justify-content:center}
+    .nav-admin span{display:none}
+    .form-row input,.form-row select,.form-row textarea{font-size:16px}
+    .g-item .info b,.v-meta p,.form-row label{font-size:14px}
+  }
+  @media(max-width:520px){
+    .gallery{columns:1}
+    .featured-grid{grid-template-columns:1fr}
+    .hero h1{font-size:32px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 顶部导航 ===== -->
+<header>
+  <div class="nav-inner">
+    <a class="brand" href="#home" onclick="go('home')">ZZH<span>作品集</span></a>
+    <nav class="nav-links">
+      <a href="#home" data-nav="home" onclick="go('home')">首页</a>
+      <a href="#photos" data-nav="photos" onclick="go('photos')">图片作品</a>
+      <a href="#videos" data-nav="videos" onclick="go('videos')">视频作品</a>
+      <button class="nav-admin" onclick="go('admin')">
+        <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>管理</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== 首页 ===== -->
+<main id="home" class="view active">
+  <section class="hero">
+    <div class="kicker">Portfolio · 2026</div>
+    <h1>记录光影，<em>讲述故事</em></h1>
+    <p>你好，我是 ZZH。这里汇集了我的摄影作品与视频作品，分为「图片作品」与「视频作品」两个独立画廊，欢迎浏览。</p>
+    <div class="hero-cta">
+      <button class="btn btn-dark" onclick="go('photos')">浏览图片作品</button>
+      <button class="btn btn-line" onclick="go('videos')">观看视频作品</button>
+    </div>
+  </section>
+
+  <div class="section-title">
+    <h2>精选作品</h2>
+    <a href="#photos" onclick="go('photos')">查看全部 →</a>
+  </div>
+  <div class="featured-grid" id="featuredGrid"></div>
+</main>
+
+<!-- ===== 图片作品 ===== -->
+<main id="photos" class="view">
+  <div class="page-head">
+    <div class="kicker">Photography</div>
+    <h1>图片作品</h1>
+    <p>我的摄影作品画廊，涵盖风光、人像、街头纪实与建筑等类型。</p>
+  </div>
+  <div class="gallery" id="photoGallery"></div>
+</main>
+
+<!-- ===== 视频作品 ===== -->
+<main id="videos" class="view">
+  <div class="page-head">
+    <div class="kicker">Videography</div>
+    <h1>视频作品</h1>
+    <p>我的视频作品，点击即可在站内直接播放。</p>
+  </div>
+  <div class="video-grid" id="videoGrid"></div>
+</main>
+
+<!-- ===== 后台管理 ===== -->
+<main id="admin" class="view">
+  <div class="page-head">
+    <div class="kicker">Admin Console</div>
+    <h1>作品管理后台</h1>
+    <p>在这里新增、编辑和删除作品。</p>
+  </div>
+
+  <div class="admin-wrap">
+    <div class="panel">
+      <h3>新增作品</h3>
+      <div class="form-row">
+        <label>作品类型</label>
+        <div class="seg" id="typeSeg">
+          <button class="on" data-type="photo" onclick="setType('photo')">图片</button>
+          <button data-type="video" onclick="setType('video')">视频</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>作品标题</label>
+        <input id="fTitle" placeholder="例如：城市夜未眠" />
+      </div>
+      <div class="form-row">
+        <label>分类 / 标签</label>
+        <select id="fCat">
+          <option>风光</option><option>人像</option><option>街头</option><option>建筑</option><option>静物</option>
+          <option>旅行短片</option><option>纪录片</option><option>延时摄影</option><option>艺术短片</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>作品简介</label>
+        <textarea id="fDesc" placeholder="一句话介绍这件作品…"></textarea>
+      </div>
+      <div class="form-row">
+        <label>上传封面 / 图片</label>
+        <div class="upload-box" id="uploadBox" onclick="demo('上传功能演示：请将作品图片发给我，我帮你上传')">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div>点击上传作品图片</div>
+        </div>
+      </div>
+      <button class="btn-save" onclick="saveWork()">保存并发布</button>
+    </div>
+
+    <div class="panel">
+      <h3>已发布作品 <span style="font-weight:300;color:var(--ink-faint);font-size:12.5px" id="countLabel"></span></h3>
+      <div class="admin-list" id="adminList"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ===== 图片预览弹窗 ===== -->
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('open')">
+  <button class="lb-close" onclick="document.getElementById('lightbox').classList.remove('open')">&times;</button>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div class="toast" id="toast"></div>
+
+<footer>© 2026 ZZH · 作品集 · zzh994.ltd</footer>
+
+<script>
+/* ===== 示例数据（正式部署时数据来自后台） ===== */
+const works = [
+  {type:'photo', title:'产品摄影 01', cat:'产品', desc:'产品摄影作品', img:'assets/photo1.jpg'},
+  {type:'photo', title:'产品摄影 02', cat:'产品', desc:'产品摄影作品', img:'assets/photo2.jpg'},
+  {type:'photo', title:'产品摄影 03', cat:'产品', desc:'产品摄影作品', img:'assets/photo3.jpg'},
+  {type:'photo', title:'活动摄影 01', cat:'活动', desc:'活动摄影作品', img:'assets/photo4.jpg'},
+  {type:'photo', title:'活动摄影 02', cat:'活动', desc:'活动摄影作品', img:'assets/photo5.jpg'},
+  {type:'photo', title:'活动摄影 03', cat:'活动', desc:'活动摄影作品', img:'assets/photo6.jpg'},
+  {type:'photo', title:'活动摄影 04', cat:'活动', desc:'活动摄影作品', img:'assets/photo7.jpg'},
+  {type:'photo', title:'活动摄影 05', cat:'活动', desc:'活动摄影作品', img:'assets/photo8.jpg'},
+  {type:'photo', title:'食品摄影 01', cat:'食品', desc:'食品摄影作品', img:'assets/photo9.jpg'},
+  {type:'photo', title:'食品摄影 02', cat:'食品', desc:'食品摄影作品', img:'assets/photo10.jpg'},
+  {type:'photo', title:'食品摄影 03', cat:'食品', desc:'食品摄影作品', img:'assets/photo11.jpg'},
+  {type:'photo', title:'食品摄影 04', cat:'食品', desc:'食品摄影作品', img:'assets/photo12.jpg'},
+  {type:'photo', title:'食品摄影 05', cat:'食品', desc:'食品摄影作品', img:'assets/photo13.jpg'},
+  {type:'photo', title:'食品摄影 06', cat:'食品', desc:'食品摄影作品', img:'assets/photo14.jpg'},
+  {type:'photo', title:'食品摄影 07', cat:'食品', desc:'食品摄影作品', img:'assets/photo15.jpg'},
+  {type:'photo', title:'食品摄影 08', cat:'食品', desc:'食品摄影作品', img:'assets/photo16.jpg'},
+  {type:'photo', title:'食品摄影 09', cat:'食品', desc:'食品摄影作品', img:'assets/photo17.jpg'},
+  {type:'video', title:'视频作品 01', cat:'短片', desc:'视频作品', img:'assets/video1.jpg', dur:'02:48'},
+  {type:'video', title:'视频作品 02', cat:'短片', desc:'视频作品', img:'assets/video2.jpg', dur:'05:12'},
+  {type:'video', title:'视频作品 03', cat:'短片', desc:'视频作品', img:'assets/video3.jpg', dur:'01:36'},
+  {type:'video', title:'视频作品 04', cat:'短片', desc:'视频作品', img:'assets/video4.jpg', dur:'03:05'},
+];
+
+let currentType = 'photo';
+
+/* ===== 路由切换 ===== */
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(view).classList.add('active');
+  document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('active', a.dataset.nav===view));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ===== 渲染：精选（首页） ===== */
+function renderFeatured(){
+  const grid = document.getElementById('featuredGrid');
+  const featured = [works[0],works[1],works[2],works[3],works[4],works[5]];
+  grid.innerHTML = featured.map((w,i)=>{
+    const tall = (i===1||i===4);
+    return `<div class="f-card ${tall?'tall':''}" onclick="openWork('${w.type}',${works.indexOf(w)})">
+      <img src="${w.img}" alt="${w.title}" loading="lazy">
+      <div class="cap"><b>${w.title}</b><small>${w.type==='video'?'视频 · ':'图片 · '}${w.cat}</small></div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== 渲染：图片画廊 ===== */
+function renderPhotos(){
+  const photos = works.filter(w=>w.type==='photo');
+  document.getElementById('photoGallery').innerHTML = photos.map((w,i)=>{
+    return `<div class="g-item" onclick="openWork('photo',${works.indexOf(w)})">
+      <img src="${w.img}" alt="${w.title}" loading="lazy">
+      <div class="info"><b>${w.title}</b><span>${w.cat}</span></div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== 渲染：视频画廊 ===== */
+function renderVideos(){
+  const videos = works.filter(w=>w.type==='video');
+  document.getElementById('videoGrid').innerHTML = videos.map(w=>{
+    return `<div class="v-card" onclick="openWork('video',${works.indexOf(w)})">
+      <div class="v-thumb">
+        <img src="${w.img}" alt="${w.title}" loading="lazy">
+        <div class="v-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        <span class="v-dur">${w.dur}</span>
+      </div>
+      <div class="v-meta"><h3>${w.title}</h3><p>${w.desc}</p></div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== 打开作品 ===== */
+function openWork(type, idx){
+  const w = works[idx];
+  if(type==='photo'){
+    document.getElementById('lbImg').src = w.img;
+    document.getElementById('lbCap').textContent = w.title + ' · ' + w.cat;
+    document.getElementById('lightbox').classList.add('open');
+  } else {
+    toast('视频播放演示：正式版将从 B 站嵌入，点击即可在站内播放《'+w.title+'》');
+  }
+}
+
+/* ===== 后台管理 ===== */
+function setType(t){
+  currentType = t;
+  document.querySelectorAll('#typeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.type===t));
+}
+function saveWork(){
+  const title = document.getElementById('fTitle').value.trim();
+  if(!title){ toast('请先填写作品标题'); return; }
+  const cat = document.getElementById('fCat').value;
+  const desc = document.getElementById('fDesc').value.trim() || '暂无简介';
+  toast('已演示「保存并发布」：作品《'+title+'」已加入'+cat+'分类');
+  document.getElementById('fTitle').value='';
+  document.getElementById('fDesc').value='';
+  setTimeout(renderAdmin, 1200);
+}
+function deleteWork(idx){
+  works.splice(idx,1);
+  renderAdmin(); renderFeatured(); renderPhotos(); renderVideos();
+  toast('作品已删除');
+}
+function renderAdmin(){
+  const list = document.getElementById('adminList');
+  if(!works.length){ list.innerHTML = '<div class="admin-empty">暂无作品，使用左侧表单新增</div>'; }
+  else {
+    list.innerHTML = works.map((w,i)=>`
+      <div class="item">
+        <img class="thumb ${w.type==='photo'?'tall-thumb':''}" src="${w.img}" alt="">
+        <div class="meta"><b>${w.title}</b><small>${w.type==='photo'?'图片':'视频'} · ${w.cat}</small></div>
+        <div class="ops">
+          <button class="op" onclick="event.stopPropagation();toast('编辑功能演示')" title="编辑"><svg viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></button>
+          <button class="op del" onclick="event.stopPropagation();deleteWork(${i})" title="删除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+        </div>
+      </div>`).join('');
+  }
+  document.getElementById('countLabel').textContent = '('+works.length+' 件)';
+}
+
+/* ===== Toast 提示 ===== */
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+function demo(msg){ toast(msg); }
+
+/* ===== 初始化 ===== */
+renderFeatured();
+renderPhotos();
+renderVideos();
+renderAdmin();
+</script>
+</body>
+</html>
