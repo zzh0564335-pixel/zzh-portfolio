@@ -148,11 +148,27 @@
   .lightbox{
     position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;display:none;
     align-items:center;justify-content:center;flex-direction:column;padding:30px;
+    user-select:none;
   }
   .lightbox.open{display:flex;animation:fade .3s ease}
-  .lightbox img{max-width:92vw;max-height:80vh;object-fit:contain;border-radius:4px}
-  .lightbox .lb-cap{color:#fff;margin-top:16px;font-size:14px;font-weight:300;letter-spacing:.5px}
-  .lb-close{position:absolute;top:22px;right:28px;background:none;border:none;color:#fff;font-size:34px;cursor:pointer;line-height:1}
+  .lightbox img{max-width:92vw;max-height:75vh;object-fit:contain;border-radius:4px;pointer-events:none}
+  .lightbox .lb-cap{color:#fff;margin-top:14px;font-size:14px;font-weight:300;letter-spacing:.5px;text-align:center}
+  .lb-close{position:absolute;top:20px;right:24px;background:none;border:none;color:#fff;font-size:32px;cursor:pointer;line-height:1;z-index:10;opacity:.8;transition:.2s}
+  .lb-close:hover{opacity:1}
+  .lb-prev,.lb-next{
+    position:absolute;top:50%;transform:translateY(-50%);
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+    color:#fff;width:48px;height:48px;border-radius:50%;cursor:pointer;
+    font-size:18px;display:flex;align-items:center;justify-content:center;
+    transition:.25s;z-index:10;backdrop-filter:blur(4px);
+  }
+  .lb-prev{left:24px}
+  .lb-next{right:24px}
+  .lb-prev:hover,.lb-next:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4)}
+  .lb-counter{
+    position:absolute;bottom:24px;left:50%;transform:translateX(-50%);
+    color:rgba(255,255,255,.6);font-size:13px;font-weight:300;letter-spacing:1px;
+  }
 
   /* ===== Toast ===== */
   .toast{
@@ -214,9 +230,14 @@
     .v-play svg{width:18px;height:18px}
     footer{padding:28px 16px;font-size:12px}
     .toast{padding:11px 20px;font-size:13px;bottom:24px}
-    .lb-close{top:16px;right:20px;font-size:28px}
-    .lightbox{padding:20px}
-    .lightbox .lb-cap{font-size:13px;margin-top:12px}
+    .lb-close{top:14px;right:16px;font-size:26px}
+    .lb-prev,.lb-next{width:40px;height:40px;font-size:15px}
+    .lb-prev{left:12px}
+    .lb-next{right:12px}
+    .lightbox{padding:16px}
+    .lightbox img{max-width:95vw;max-height:70vh}
+    .lightbox .lb-cap{font-size:12.5px;margin-top:10px}
+    .lb-counter{font-size:12px;bottom:16px}
   }
 </style>
 </head>
@@ -274,10 +295,13 @@
 </main>
 
 <!-- ===== 图片预览弹窗 ===== -->
-<div class="lightbox" id="lightbox" onclick="this.classList.remove('open')">
-  <button class="lb-close" onclick="document.getElementById('lightbox').classList.remove('open')">&times;</button>
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" onclick="closeLightbox()">&times;</button>
+  <button class="lb-prev" onclick="prevPhoto()">&#10094;</button>
+  <button class="lb-next" onclick="nextPhoto()">&#10095;</button>
   <img id="lbImg" src="" alt="">
   <div class="lb-cap" id="lbCap"></div>
+  <div class="lb-counter" id="lbCounter"></div>
 </div>
 
 <!-- ===== Toast ===== -->
@@ -367,17 +391,71 @@ function renderVideos(){
   }).join('');
 }
 
-/* ===== 打开作品 ===== */
+/* ===== 图片灯箱 ===== */
+let currentPhotoIdx = 0;
+let photoIndices = [];
+
 function openWork(type, idx){
   const w = works[idx];
   if(type==='photo'){
-    document.getElementById('lbImg').src = w.img;
-    document.getElementById('lbCap').textContent = w.title + ' · ' + w.cat;
+    photoIndices = works.map((w,i)=>w.type==='photo'?i:-1).filter(i=>i>=0);
+    currentPhotoIdx = photoIndices.indexOf(idx);
+    showPhoto();
     document.getElementById('lightbox').classList.add('open');
   } else {
     toast('视频播放演示：正式版将从 B 站嵌入，点击即可在站内播放《'+w.title+'》');
   }
 }
+
+function showPhoto(){
+  const idx = photoIndices[currentPhotoIdx];
+  const w = works[idx];
+  document.getElementById('lbImg').src = w.img;
+  document.getElementById('lbCap').textContent = w.title + ' · ' + w.cat;
+  document.getElementById('lbCounter').textContent = (currentPhotoIdx+1) + ' / ' + photoIndices.length;
+}
+
+function prevPhoto(){
+  currentPhotoIdx = (currentPhotoIdx - 1 + photoIndices.length) % photoIndices.length;
+  showPhoto();
+}
+
+function nextPhoto(){
+  currentPhotoIdx = (currentPhotoIdx + 1) % photoIndices.length;
+  showPhoto();
+}
+
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+// 键盘左右键切换
+document.addEventListener('keydown', function(e){
+  if(!document.getElementById('lightbox').classList.contains('open')) return;
+  if(e.key === 'ArrowLeft') prevPhoto();
+  if(e.key === 'ArrowRight') nextPhoto();
+  if(e.key === 'Escape') closeLightbox();
+});
+
+// 触摸滑动切换（手机端）
+let touchStartX = 0;
+let touchEndX = 0;
+document.getElementById('lightbox').addEventListener('touchstart', function(e){
+  touchStartX = e.changedTouches[0].screenX;
+}, {passive:true});
+document.getElementById('lightbox').addEventListener('touchend', function(e){
+  touchEndX = e.changedTouches[0].screenX;
+  const diff = touchStartX - touchEndX;
+  if(Math.abs(diff) > 50){
+    if(diff > 0) nextPhoto();
+    else prevPhoto();
+  }
+}, {passive:true});
+
+// 点击背景关闭
+document.getElementById('lightbox').addEventListener('click', function(e){
+  if(e.target === this) closeLightbox();
+});
 
 /* ===== Toast 提示 ===== */
 let toastTimer;
