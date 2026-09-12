@@ -144,52 +144,6 @@
   .v-meta h3{font-family:"Noto Serif SC",serif;font-size:16.5px;font-weight:600;margin-bottom:5px}
   .v-meta p{font-size:13px;color:var(--ink-soft);font-weight:300;line-height:1.6}
 
-  /* ===== 后台管理 ===== */
-  .admin-wrap{display:grid;grid-template-columns:380px 1fr;gap:28px;align-items:start}
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:26px;box-shadow:var(--shadow)}
-  .panel h3{font-family:"Noto Serif SC",serif;font-size:17px;font-weight:600;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
-  .form-row{margin-bottom:16px}
-  .form-row label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;font-weight:400}
-  .form-row input,.form-row select,.form-row textarea{
-    width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:7px;
-    font-size:13.5px;font-family:inherit;background:#fff;color:var(--ink);transition:.2s;outline:none;
-  }
-  .form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(176,137,104,.12)}
-  .form-row textarea{resize:vertical;min-height:72px}
-  .seg{display:flex;background:var(--bg-deep);border-radius:8px;padding:4px;gap:4px}
-  .seg button{
-    flex:1;padding:9px;border:none;background:transparent;border-radius:6px;
-    font-size:13px;cursor:pointer;color:var(--ink-soft);transition:.2s;font-family:inherit;
-  }
-  .seg button.on{background:#fff;color:var(--ink);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-  .upload-box{
-    border:1.5px dashed var(--line);border-radius:8px;padding:26px 14px;text-align:center;
-    color:var(--ink-faint);cursor:pointer;transition:.2s;font-size:13px;
-  }
-  .upload-box:hover{border-color:var(--accent);color:var(--accent-deep)}
-  .upload-box svg{width:26px;height:26px;stroke:var(--ink-faint);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin-bottom:8px}
-  .btn-save{width:100%;margin-top:6px;background:var(--accent);color:#fff;padding:13px;border:none;border-radius:8px;font-size:14px;cursor:pointer;transition:.2s;font-family:inherit}
-  .btn-save:hover{background:var(--accent-deep)}
-
-  .admin-list .item{
-    display:flex;gap:14px;align-items:center;padding:12px;border-radius:8px;transition:.15s;
-  }
-  .admin-list .item:hover{background:var(--bg)}
-  .admin-list .thumb{width:74px;height:50px;border-radius:5px;object-fit:cover;flex-shrink:0}
-  .admin-list .tall-thumb{height:60px}
-  .admin-list .meta{flex:1;min-width:0}
-  .admin-list .meta b{display:block;font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .admin-list .meta small{font-size:12px;color:var(--ink-faint)}
-  .admin-list .ops{display:flex;gap:6px}
-  .op{
-    width:30px;height:30px;border-radius:6px;border:1px solid var(--line);background:#fff;
-    cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;color:var(--ink-soft);
-  }
-  .op:hover{color:var(--accent-deep);border-color:var(--accent)}
-  .op.del:hover{color:#c0392b;border-color:#c0392b}
-  .op svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .admin-empty{text-align:center;color:var(--ink-faint);padding:40px 0;font-size:13px;font-weight:300}
-
   /* ===== Lightbox ===== */
   .lightbox{
     position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;display:none;
@@ -213,22 +167,52 @@
 
   /* ===== 响应式 ===== */
   @media(max-width:860px){
-    .hero h1{font-size:38px}
-    .hero{padding:48px 0 24px}
-    .featured-grid{grid-template-columns:repeat(2,1fr)}
-    .video-grid{grid-template-columns:1fr}
-    .admin-wrap{grid-template-columns:1fr}
-    .gallery{columns:2 200px}
-    .nav-links a{padding:8px 10px}
-    .nav-admin{width:38px;padding:8px;justify-content:center}
-    .nav-admin span{display:none}
-    .form-row input,.form-row select,.form-row textarea{font-size:16px}
-    .g-item .info b,.v-meta p,.form-row label{font-size:14px}
+    .hero h1{font-size:36px}
+    .hero{padding:40px 0 20px}
+    .hero p{font-size:15px}
+    .featured-grid{grid-template-columns:1fr;gap:14px}
+    .f-card{aspect-ratio:16/10}
+    .f-card.tall{aspect-ratio:16/10;grid-row:auto}
+    .video-grid{grid-template-columns:1fr;gap:16px}
+    .gallery{columns:1;column-gap:0}
+    .g-item{margin-bottom:16px}
+    .g-item .info{padding:14px 16px 15px}
+    .g-item .info b{font-size:14px}
+    .nav-inner{padding:0 18px;height:58px}
+    .nav-links a{padding:8px 8px;font-size:13px}
+    .brand{font-size:20px}
+    .view{padding:30px 18px 70px}
+    .page-head h1{font-size:32px}
+    .page-head p{font-size:14px}
+    .section-title h2{font-size:22px}
+    .v-meta{padding:14px 16px 16px}
+    .v-meta h3{font-size:16px}
+    .v-meta p{font-size:13px}
   }
   @media(max-width:520px){
-    .gallery{columns:1}
-    .featured-grid{grid-template-columns:1fr}
-    .hero h1{font-size:32px}
+    .hero h1{font-size:30px;letter-spacing:1px}
+    .hero .kicker{font-size:12px;letter-spacing:3px}
+    .hero p{font-size:14px;max-width:100%}
+    .hero-cta{gap:10px}
+    .btn{padding:11px 22px;font-size:13px}
+    .page-head h1{font-size:28px}
+    .section-title h2{font-size:20px}
+    .nav-links a{padding:8px 6px;font-size:12.5px}
+    .brand{font-size:18px;letter-spacing:1px}
+    .view{padding:24px 16px 60px}
+    .g-item .info{padding:12px 14px 13px}
+    .g-item .info b{font-size:13.5px}
+    .g-item .info span{font-size:11.5px}
+    .v-meta{padding:12px 14px 14px}
+    .v-meta h3{font-size:15px}
+    .v-meta p{font-size:12.5px}
+    .v-play{width:54px;height:54px}
+    .v-play svg{width:18px;height:18px}
+    footer{padding:28px 16px;font-size:12px}
+    .toast{padding:11px 20px;font-size:13px;bottom:24px}
+    .lb-close{top:16px;right:20px;font-size:28px}
+    .lightbox{padding:20px}
+    .lightbox .lb-cap{font-size:13px;margin-top:12px}
   }
 </style>
 </head>
@@ -242,10 +226,6 @@
       <a href="#home" data-nav="home" onclick="go('home')">首页</a>
       <a href="#photos" data-nav="photos" onclick="go('photos')">图片作品</a>
       <a href="#videos" data-nav="videos" onclick="go('videos')">视频作品</a>
-      <button class="nav-admin" onclick="go('admin')">
-        <svg viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>管理</span>
-      </button>
     </nav>
   </div>
 </header>
@@ -287,56 +267,6 @@
     <p>我的视频作品，点击即可在站内直接播放。</p>
   </div>
   <div class="video-grid" id="videoGrid"></div>
-</main>
-
-<!-- ===== 后台管理 ===== -->
-<main id="admin" class="view">
-  <div class="page-head">
-    <div class="kicker">Admin Console</div>
-    <h1>作品管理后台</h1>
-    <p>在这里新增、编辑和删除作品。</p>
-  </div>
-
-  <div class="admin-wrap">
-    <div class="panel">
-      <h3>新增作品</h3>
-      <div class="form-row">
-        <label>作品类型</label>
-        <div class="seg" id="typeSeg">
-          <button class="on" data-type="photo" onclick="setType('photo')">图片</button>
-          <button data-type="video" onclick="setType('video')">视频</button>
-        </div>
-      </div>
-      <div class="form-row">
-        <label>作品标题</label>
-        <input id="fTitle" placeholder="例如：城市夜未眠" />
-      </div>
-      <div class="form-row">
-        <label>分类 / 标签</label>
-        <select id="fCat">
-          <option>风光</option><option>人像</option><option>街头</option><option>建筑</option><option>静物</option>
-          <option>旅行短片</option><option>纪录片</option><option>延时摄影</option><option>艺术短片</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label>作品简介</label>
-        <textarea id="fDesc" placeholder="一句话介绍这件作品…"></textarea>
-      </div>
-      <div class="form-row">
-        <label>上传封面 / 图片</label>
-        <div class="upload-box" id="uploadBox" onclick="demo('上传功能演示：请将作品图片发给我，我帮你上传')">
-          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <div>点击上传作品图片</div>
-        </div>
-      </div>
-      <button class="btn-save" onclick="saveWork()">保存并发布</button>
-    </div>
-
-    <div class="panel">
-      <h3>已发布作品 <span style="font-weight:300;color:var(--ink-faint);font-size:12.5px" id="countLabel"></span></h3>
-      <div class="admin-list" id="adminList"></div>
-    </div>
-  </div>
 </main>
 
 <!-- ===== 图片预览弹窗 ===== -->
@@ -445,43 +375,6 @@ function openWork(type, idx){
   }
 }
 
-/* ===== 后台管理 ===== */
-function setType(t){
-  currentType = t;
-  document.querySelectorAll('#typeSeg button').forEach(b=>b.classList.toggle('on', b.dataset.type===t));
-}
-function saveWork(){
-  const title = document.getElementById('fTitle').value.trim();
-  if(!title){ toast('请先填写作品标题'); return; }
-  const cat = document.getElementById('fCat').value;
-  const desc = document.getElementById('fDesc').value.trim() || '暂无简介';
-  toast('已演示「保存并发布」：作品《'+title+'」已加入'+cat+'分类');
-  document.getElementById('fTitle').value='';
-  document.getElementById('fDesc').value='';
-  setTimeout(renderAdmin, 1200);
-}
-function deleteWork(idx){
-  works.splice(idx,1);
-  renderAdmin(); renderFeatured(); renderPhotos(); renderVideos();
-  toast('作品已删除');
-}
-function renderAdmin(){
-  const list = document.getElementById('adminList');
-  if(!works.length){ list.innerHTML = '<div class="admin-empty">暂无作品，使用左侧表单新增</div>'; }
-  else {
-    list.innerHTML = works.map((w,i)=>`
-      <div class="item">
-        <img class="thumb ${w.type==='photo'?'tall-thumb':''}" src="${w.img}" alt="">
-        <div class="meta"><b>${w.title}</b><small>${w.type==='photo'?'图片':'视频'} · ${w.cat}</small></div>
-        <div class="ops">
-          <button class="op" onclick="event.stopPropagation();toast('编辑功能演示')" title="编辑"><svg viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></button>
-          <button class="op del" onclick="event.stopPropagation();deleteWork(${i})" title="删除"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-        </div>
-      </div>`).join('');
-  }
-  document.getElementById('countLabel').textContent = '('+works.length+' 件)';
-}
-
 /* ===== Toast 提示 ===== */
 let toastTimer;
 function toast(msg){
@@ -491,13 +384,11 @@ function toast(msg){
   clearTimeout(toastTimer);
   toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
 }
-function demo(msg){ toast(msg); }
 
 /* ===== 初始化 ===== */
 renderFeatured();
 renderPhotos();
 renderVideos();
-renderAdmin();
 </script>
 </body>
 </html>
