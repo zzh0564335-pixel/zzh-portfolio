@@ -123,6 +123,16 @@
   .g-item .info b{font-size:13.5px;font-weight:500}
   .g-item .info span{font-size:12px;color:var(--ink-faint);font-weight:300}
 
+  /* ===== 分类筛选 ===== */
+  .filter-bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+  .filter-btn{
+    padding:8px 20px;border:1px solid var(--line);background:var(--card);
+    border-radius:99px;font-size:13.5px;cursor:pointer;transition:.25s;
+    color:var(--ink-soft);font-family:inherit;
+  }
+  .filter-btn:hover{border-color:var(--accent);color:var(--accent-deep)}
+  .filter-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
   /* ===== 视频卡片 ===== */
   .video-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
   .v-card{border-radius:8px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);cursor:pointer;transition:.3s}
@@ -177,6 +187,33 @@
     opacity:0;pointer-events:none;transition:.35s;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.25);
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ===== 视频播放器弹窗 ===== */
+  .video-modal{
+    position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:250;display:none;
+    align-items:center;justify-content:center;padding:20px;
+  }
+  .video-modal.open{display:flex;animation:fade .3s ease}
+  .video-modal-inner{
+    width:100%;max-width:960px;background:#000;border-radius:8px;overflow:hidden;
+    position:relative;box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .vm-close{
+    position:absolute;top:-40px;right:0;background:none;border:none;color:#fff;
+    font-size:30px;cursor:pointer;line-height:1;z-index:10;opacity:.8;transition:.2s;
+  }
+  .vm-close:hover{opacity:1}
+  .vm-title{
+    color:#fff;padding:14px 18px;font-size:15px;font-weight:500;
+    background:linear-gradient(to bottom,rgba(0,0,0,.8),rgba(0,0,0,.4));
+    position:absolute;top:0;left:0;right:0;z-index:5;
+  }
+  .vm-player{
+    position:relative;width:100%;padding-top:56.25%;
+  }
+  .vm-player iframe{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+  }
 
   /* ===== 页脚 ===== */
   footer{border-top:1px solid var(--line);padding:34px 28px;text-align:center;color:var(--ink-faint);font-size:12.5px;font-weight:300}
@@ -238,6 +275,9 @@
     .lightbox img{max-width:95vw;max-height:70vh}
     .lightbox .lb-cap{font-size:12.5px;margin-top:10px}
     .lb-counter{font-size:12px;bottom:16px}
+    .video-modal{padding:12px}
+    .vm-close{top:-34px;font-size:26px}
+    .vm-title{padding:10px 14px;font-size:13px}
   }
 </style>
 </head>
@@ -291,6 +331,7 @@
     <h1>视频作品</h1>
     <p>我的视频作品，点击即可在站内直接播放。</p>
   </div>
+  <div class="filter-bar" id="videoFilter"></div>
   <div class="video-grid" id="videoGrid"></div>
 </main>
 
@@ -302,6 +343,17 @@
   <img id="lbImg" src="" alt="">
   <div class="lb-cap" id="lbCap"></div>
   <div class="lb-counter" id="lbCounter"></div>
+</div>
+
+<!-- ===== 视频播放器弹窗 ===== -->
+<div class="video-modal" id="videoModal">
+  <div class="video-modal-inner">
+    <button class="vm-close" onclick="closeVideoModal()">&times;</button>
+    <div class="vm-title" id="vmTitle"></div>
+    <div class="vm-player">
+      <iframe id="vmIframe" src="" frameborder="0" allowfullscreen="true" scrolling="no" border="0"></iframe>
+    </div>
+  </div>
 </div>
 
 <!-- ===== Toast ===== -->
@@ -336,10 +388,14 @@ const works = [
   {type:'photo', title:'食品摄影 07', cat:'食品', desc:'食品摄影作品', img:'assets/photo15.jpg'},
   {type:'photo', title:'食品摄影 08', cat:'食品', desc:'食品摄影作品', img:'assets/photo16.jpg'},
   {type:'photo', title:'食品摄影 09', cat:'食品', desc:'食品摄影作品', img:'assets/photo17.jpg'},
-  {type:'video', title:'视频作品 01', cat:'短片', desc:'视频作品', img:'assets/video1.jpg', dur:'02:48'},
-  {type:'video', title:'视频作品 02', cat:'短片', desc:'视频作品', img:'assets/video2.jpg', dur:'05:12'},
-  {type:'video', title:'视频作品 03', cat:'短片', desc:'视频作品', img:'assets/video3.jpg', dur:'01:36'},
-  {type:'video', title:'视频作品 04', cat:'短片', desc:'视频作品', img:'assets/video4.jpg', dur:'03:05'},
+  {type:'video', title:'卸妆油护肤产品', cat:'护肤产品', desc:'卸妆油产品展示与使用教程', img:'assets/video1.jpg', dur:'03:15', video:'https://www.bilibili.com/video/BV1zEY96vEH1/'},
+  {type:'video', title:'防晒产品', cat:'护肤产品', desc:'防晒产品测评与推荐', img:'assets/video2.jpg', dur:'02:48', video:'https://www.bilibili.com/video/BV1zEY96vEMz/'},
+  {type:'video', title:'洋甘菊护肤产品', cat:'护肤产品', desc:'洋甘菊护肤产品介绍', img:'assets/video3.jpg', dur:'04:02', video:'https://www.bilibili.com/video/BV1zEY96vEfc/'},
+  {type:'video', title:'韩束精华液护肤品', cat:'护肤产品', desc:'韩束精华液产品测评', img:'assets/video4.jpg', dur:'03:36', video:'https://www.bilibili.com/video/BV1znY96PEAR/'},
+  {type:'video', title:'燕窝胶原蛋白内调产品', cat:'食品产品', desc:'燕窝胶原蛋白内调产品介绍', img:'assets/video1.jpg', dur:'05:12', video:'https://www.bilibili.com/video/BV1zEY96vEZZ/'},
+  {type:'video', title:'盐津铺子果冻产品', cat:'食品产品', desc:'盐津铺子果冻产品测评', img:'assets/video2.jpg', dur:'02:24', video:'https://www.bilibili.com/video/BV1fnY96PE5P/'},
+  {type:'video', title:'盐津铺子素毛肚', cat:'食品产品', desc:'盐津铺子素毛肚零食推荐', img:'assets/video3.jpg', dur:'01:58', video:'https://www.bilibili.com/video/BV1BnY96PEQN/'},
+  {type:'video', title:'大魔王线下活动', cat:'活动记录', desc:'大魔王线下活动精彩记录', img:'assets/video4.jpg', dur:'06:30', video:'https://www.bilibili.com/video/BV1znY96PEGh/'},
 ];
 
 let currentType = 'photo';
@@ -376,9 +432,33 @@ function renderPhotos(){
   }).join('');
 }
 
+/* ===== 视频分类筛选 ===== */
+let currentVideoCat = '全部';
+
+function renderVideoFilter(){
+  const videos = works.filter(w=>w.type==='video');
+  const cats = ['全部', ...new Set(videos.map(w=>w.cat))];
+  document.getElementById('videoFilter').innerHTML = cats.map(cat=>{
+    return `<button class="filter-btn ${cat===currentVideoCat?'active':''}" onclick="filterVideo('${cat}')">${cat}</button>`;
+  }).join('');
+}
+
+function filterVideo(cat){
+  currentVideoCat = cat;
+  renderVideoFilter();
+  renderVideos();
+}
+
 /* ===== 渲染：视频画廊 ===== */
 function renderVideos(){
-  const videos = works.filter(w=>w.type==='video');
+  let videos = works.filter(w=>w.type==='video');
+  if(currentVideoCat !== '全部'){
+    videos = videos.filter(w=>w.cat === currentVideoCat);
+  }
+  if(videos.length === 0){
+    document.getElementById('videoGrid').innerHTML = '<div style="text-align:center;color:var(--ink-faint);padding:60px 0;font-size:14px;">该分类暂无视频</div>';
+    return;
+  }
   document.getElementById('videoGrid').innerHTML = videos.map(w=>{
     return `<div class="v-card" onclick="openWork('video',${works.indexOf(w)})">
       <div class="v-thumb">
@@ -403,9 +483,52 @@ function openWork(type, idx){
     showPhoto();
     document.getElementById('lightbox').classList.add('open');
   } else {
-    toast('视频播放演示：正式版将从 B 站嵌入，点击即可在站内播放《'+w.title+'》');
+    if(w.video){
+      openVideoModal(w);
+    } else {
+      toast('该视频暂未设置链接');
+    }
   }
 }
+
+// 从 B 站链接提取 BV 号
+function extractBvid(url){
+  const match = url.match(/BV[a-zA-Z0-9]+/);
+  return match ? match[0] : null;
+}
+
+// 打开视频播放器弹窗
+function openVideoModal(w){
+  const bvid = extractBvid(w.video);
+  if(!bvid){
+    toast('视频链接格式不正确');
+    return;
+  }
+  const embedUrl = 'https://player.bilibili.com/player.html?bvid=' + bvid + '&page=1&autoplay=1&high_quality=1&danmaku=0';
+  document.getElementById('vmIframe').src = embedUrl;
+  document.getElementById('vmTitle').textContent = w.title;
+  document.getElementById('videoModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+// 关闭视频播放器弹窗
+function closeVideoModal(){
+  document.getElementById('videoModal').classList.remove('open');
+  document.getElementById('vmIframe').src = '';
+  document.body.style.overflow = '';
+}
+
+// 点击视频弹窗背景关闭
+document.getElementById('videoModal').addEventListener('click', function(e){
+  if(e.target === this) closeVideoModal();
+});
+
+// ESC 键关闭视频弹窗
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && document.getElementById('videoModal').classList.contains('open')){
+    closeVideoModal();
+  }
+});
 
 function showPhoto(){
   const idx = photoIndices[currentPhotoIdx];
@@ -470,6 +593,7 @@ function toast(msg){
 /* ===== 初始化 ===== */
 renderFeatured();
 renderPhotos();
+renderVideoFilter();
 renderVideos();
 </script>
 </body>
