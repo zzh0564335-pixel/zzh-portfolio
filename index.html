@@ -319,8 +319,9 @@
   <div class="page-head">
     <div class="kicker">Photography</div>
     <h1>图片作品</h1>
-    <p>我的摄影作品画廊，涵盖风光、人像、街头纪实与建筑等类型。</p>
+    <p>我的摄影作品画廊，涵盖产品、活动、食品等类型。</p>
   </div>
+  <div class="filter-bar" id="photoFilter"></div>
   <div class="gallery" id="photoGallery"></div>
 </main>
 
@@ -421,9 +422,33 @@ function renderFeatured(){
   }).join('');
 }
 
+/* ===== 图片分类筛选 ===== */
+let currentPhotoCat = '全部';
+
+function renderPhotoFilter(){
+  const photos = works.filter(w=>w.type==='photo');
+  const cats = ['全部', ...new Set(photos.map(w=>w.cat))];
+  document.getElementById('photoFilter').innerHTML = cats.map(cat=>{
+    return `<button class="filter-btn ${cat===currentPhotoCat?'active':''}" onclick="filterPhoto('${cat}')">${cat}</button>`;
+  }).join('');
+}
+
+function filterPhoto(cat){
+  currentPhotoCat = cat;
+  renderPhotoFilter();
+  renderPhotos();
+}
+
 /* ===== 渲染：图片画廊 ===== */
 function renderPhotos(){
-  const photos = works.filter(w=>w.type==='photo');
+  let photos = works.filter(w=>w.type==='photo');
+  if(currentPhotoCat !== '全部'){
+    photos = photos.filter(w=>w.cat === currentPhotoCat);
+  }
+  if(photos.length === 0){
+    document.getElementById('photoGallery').innerHTML = '<div style="text-align:center;color:var(--ink-faint);padding:60px 0;font-size:14px;">该分类暂无图片</div>';
+    return;
+  }
   document.getElementById('photoGallery').innerHTML = photos.map((w,i)=>{
     return `<div class="g-item" onclick="openWork('photo',${works.indexOf(w)})">
       <img src="${w.img}" alt="${w.title}" loading="lazy">
@@ -592,6 +617,7 @@ function toast(msg){
 
 /* ===== 初始化 ===== */
 renderFeatured();
+renderPhotoFilter();
 renderPhotos();
 renderVideoFilter();
 renderVideos();
