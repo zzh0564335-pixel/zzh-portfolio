@@ -250,6 +250,26 @@ body{
 .stat b{display:block;font-family:'Noto Serif SC',serif;font-size:36px;font-weight:700;color:var(--ink)}
 .stat span{font-size:12px;color:var(--ink-faint);letter-spacing:2px}
 
+/* ===== 精选照片 ===== */
+.featured-section{max-width:1200px;margin:0 auto;padding:80px 32px}
+.section-head{text-align:center;margin-bottom:48px}
+.section-head .kicker{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:500}
+.section-head h2{font-size:36px;font-weight:700;font-family:'Noto Serif SC',serif;color:var(--ink);margin-bottom:12px}
+.section-head p{font-size:15px;color:var(--muted);max-width:500px;margin:0 auto}
+.featured-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:48px}
+.featured-item{position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:12px;cursor:pointer;background:var(--card-bg)}
+.featured-item picture{width:100%;height:100%;display:block}
+.featured-item img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94),opacity 0.3s;opacity:0}
+.featured-item img.loaded{opacity:1}
+.featured-item:hover img{transform:scale(1.08)}
+.featured-item .featured-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 50%);opacity:0;transition:opacity 0.3s;display:flex;align-items:flex-end;padding:20px}
+.featured-item:hover .featured-overlay{opacity:1}
+.featured-item .featured-info{color:#fff}
+.featured-item .featured-info b{display:block;font-size:15px;font-weight:600;margin-bottom:4px}
+.featured-item .featured-info span{font-size:12px;opacity:0.85}
+.section-more{text-align:center}
+.section-more .btn{padding:14px 36px;font-size:15px}
+
 /* ===== 筛选栏 ===== */
 .filter-bar{
   display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
@@ -472,6 +492,9 @@ body{
   .lb-prev{left:8px}.lb-next{right:8px}
   .lb-close{top:16px;right:16px}
   .back-to-top{bottom:16px;right:16px;width:42px;height:42px}
+  .featured-section{padding:60px 20px}
+  .section-head h2{font-size:28px}
+  .featured-grid{grid-template-columns:repeat(2,1fr);gap:12px}
 }
 @media(max-width:480px){
   .nav-logo{font-size:18px}
@@ -535,6 +558,19 @@ body{
       <div class="stat"><b>3</b><span>作品分类</span></div>
     </div>
   </div>
+
+  <!-- ===== 精选照片 ===== -->
+  <section class="featured-section">
+    <div class="section-head">
+      <div class="kicker">Featured</div>
+      <h2>精选作品</h2>
+      <p>精选部分摄影作品，点击查看大图</p>
+    </div>
+    <div class="featured-grid" id="featuredGrid"></div>
+    <div class="section-more">
+      <button class="btn btn-outline" onclick="go('photos')">查看更多作品 →</button>
+    </div>
+  </section>
 </main>
 
 <!-- ===== 图片作品 ===== -->
@@ -657,6 +693,32 @@ function filterPhoto(cat){
   currentPhotoCat = cat;
   renderPhotoFilter();
   renderPhotos();
+}
+
+/* ===== 渲染：首页精选照片 ===== */
+function renderFeatured(){
+  // 精选6张照片（每个分类选2张）
+  const featuredIndices = [0, 1, 3, 4, 8, 9]; // photo1, photo2, photo4, photo5, photo9, photo10
+  const featured = featuredIndices.map(i => works[i]).filter(w => w && w.type === 'photo');
+
+  document.getElementById('featuredGrid').innerHTML = featured.map((w, idx) => {
+    const webpSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+    const avifSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.avif');
+    const workIndex = works.indexOf(w);
+    return `<div class="featured-item" onclick="openWork('photo',${workIndex})">
+      <picture>
+        <source srcset="${avifSrc}" type="image/avif">
+        <source srcset="${webpSrc}" type="image/webp">
+        <img src="${w.img}" alt="${w.title}" loading="lazy" onload="this.classList.add('loaded')">
+      </picture>
+      <div class="featured-overlay">
+        <div class="featured-info">
+          <b>${w.title}</b>
+          <span>${w.cat}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 /* ===== 渲染：图片画廊（带懒加载+模糊占位） ===== */
@@ -1061,6 +1123,7 @@ function init(){
     go(hash);
   }
   // 渲染
+  renderFeatured();
   renderPhotoFilter();
   renderPhotos();
   renderVideoFilter();
