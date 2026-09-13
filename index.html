@@ -207,9 +207,9 @@ body{
 
 /* ===== 首页 Hero ===== */
 .hero{
-  min-height:calc(100vh - var(--nav-h));
+  min-height:auto;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:0 32px;
+  text-align:center;padding:60px 32px 40px;
   position:relative;overflow:hidden;
 }
 .hero::before{
@@ -221,15 +221,15 @@ body{
   font-family:'Noto Serif SC',serif;
   font-size:clamp(48px,8vw,96px);font-weight:900;
   letter-spacing:8px;color:var(--ink);
-  margin-bottom:16px;position:relative;
+  margin-bottom:12px;position:relative;
 }
 .hero .subtitle{
   font-size:18px;color:var(--ink-soft);
-  letter-spacing:4px;margin-bottom:40px;
+  letter-spacing:4px;margin-bottom:24px;
 }
 .hero-desc{
   max-width:520px;color:var(--ink-soft);
-  font-size:15px;line-height:1.9;margin-bottom:48px;
+  font-size:15px;line-height:1.9;margin-bottom:32px;
 }
 .hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
 .btn{
@@ -251,8 +251,8 @@ body{
 .stat span{font-size:12px;color:var(--ink-faint);letter-spacing:2px}
 
 /* ===== 精选照片 ===== */
-.featured-section{max-width:1200px;margin:0 auto;padding:80px 32px}
-.section-head{text-align:center;margin-bottom:48px}
+.featured-section{max-width:1200px;margin:0 auto;padding:40px 32px 60px}
+.section-head{text-align:center;margin-bottom:32px}
 .section-head .kicker{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:500}
 .section-head h2{font-size:36px;font-weight:700;font-family:'Noto Serif SC',serif;color:var(--ink);margin-bottom:12px}
 .section-head p{font-size:15px;color:var(--muted);max-width:500px;margin:0 auto}
@@ -485,16 +485,15 @@ body{
   .gallery{grid-template-columns:repeat(2,1fr);gap:10px;padding:0 16px}
   .video-grid{grid-template-columns:1fr;gap:16px;padding:0 16px}
   .filter-bar{padding:0 16px}
-  .hero{padding:0 16px}
+  .hero{padding:40px 16px 24px}
   .hero h1{letter-spacing:4px}
-  .hero-stats{gap:24px}
-  .stat b{font-size:28px}
   .lb-prev{left:8px}.lb-next{right:8px}
   .lb-close{top:16px;right:16px}
   .back-to-top{bottom:16px;right:16px;width:42px;height:42px}
-  .featured-section{padding:60px 20px}
+  .featured-section{padding:24px 16px 40px}
+  .section-head{margin-bottom:24px}
   .section-head h2{font-size:28px}
-  .featured-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .featured-grid{grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:32px}
 }
 @media(max-width:480px){
   .nav-logo{font-size:18px}
@@ -551,11 +550,6 @@ body{
     <div class="hero-btns">
       <button class="btn btn-dark" onclick="go('photos')">浏览图片作品</button>
       <button class="btn btn-outline" onclick="go('videos')">观看视频作品</button>
-    </div>
-    <div class="hero-stats">
-      <div class="stat"><b>24</b><span>摄影作品</span></div>
-      <div class="stat"><b>8</b><span>视频作品</span></div>
-      <div class="stat"><b>3</b><span>作品分类</span></div>
     </div>
   </div>
 
