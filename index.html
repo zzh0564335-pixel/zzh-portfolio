@@ -72,6 +72,29 @@ body{
   overflow-x:hidden;
 }
 
+/* ===== 鼠标跟随光效 ===== */
+.cursor-glow{
+  position:fixed;
+  width:600px;
+  height:600px;
+  border-radius:50%;
+  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 12%,transparent) 0%,transparent 70%);
+  pointer-events:none;
+  z-index:1;
+  transform:translate(-50%,-50%);
+  transition:opacity 0.3s ease;
+  opacity:0;
+  mix-blend-mode:multiply;
+}
+[data-theme="dark"] .cursor-glow{
+  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 15%,transparent) 0%,transparent 70%);
+  mix-blend-mode:screen;
+}
+.cursor-glow.active{opacity:1}
+@media (max-width:768px){
+  .cursor-glow{display:none}
+}
+
 /* ===== 导航栏 ===== */
 .nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
@@ -468,6 +491,9 @@ body{
 </head>
 <body>
 
+<!-- ===== 鼠标跟随光效 ===== -->
+<div class="cursor-glow" id="cursorGlow"></div>
+
 <!-- ===== 导航栏 ===== -->
 <nav class="nav">
   <a class="nav-logo" onclick="go('home')">ZZH</a>
@@ -538,7 +564,7 @@ body{
   <button class="lb-close" onclick="closeLightbox()">&times;</button>
   <button class="lb-prev" onclick="prevPhoto()">&#10094;</button>
   <button class="lb-next" onclick="nextPhoto()">&#10095;</button>
-  <div class="lb-img-wrap"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-img-wrap" id="lbImgWrap"></div>
   <div class="lb-title" id="lbTitle"></div>
   <div class="lb-counter" id="lbCounter"></div>
 </div>
@@ -644,8 +670,14 @@ function renderPhotos(){
     return;
   }
   document.getElementById('photoGallery').innerHTML = photos.map((w,i)=>{
+    const webpSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+    const avifSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.avif');
     return `<div class="g-item" onclick="openWork('photo',${works.indexOf(w)})">
-      <img src="${w.img}" alt="${w.title}" loading="lazy" onload="this.classList.add('loaded')">
+      <picture>
+        <source srcset="${avifSrc}" type="image/avif">
+        <source srcset="${webpSrc}" type="image/webp">
+        <img src="${w.img}" alt="${w.title}" loading="lazy" onload="this.classList.add('loaded')">
+      </picture>
       <div class="info"><b>${w.title}</b><span>${w.cat}</span></div>
     </div>`;
   }).join('');
@@ -679,9 +711,15 @@ function renderVideos(){
     return;
   }
   document.getElementById('videoGrid').innerHTML = videos.map(w=>{
+    const webpSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+    const avifSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.avif');
     return `<div class="v-card" onclick="openWork('video',${works.indexOf(w)})">
       <div class="v-thumb">
-        <img src="${w.img}" alt="${w.title}" loading="lazy" onload="this.classList.add('loaded')">
+        <picture>
+          <source srcset="${avifSrc}" type="image/avif">
+          <source srcset="${webpSrc}" type="image/webp">
+          <img src="${w.img}" alt="${w.title}" loading="lazy" onload="this.classList.add('loaded')">
+        </picture>
         <div class="v-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
         <span class="v-dur">${w.dur}</span>
       </div>
@@ -713,7 +751,15 @@ function openWork(type, idx){
 function showPhoto(){
   const idx = photoIndices[currentPhotoIdx];
   const w = works[idx];
-  document.getElementById('lbImg').src = w.img;
+  const webpSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+  const avifSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.avif');
+  document.getElementById('lbImgWrap').innerHTML = `
+    <picture>
+      <source srcset="${avifSrc}" type="image/avif">
+      <source srcset="${webpSrc}" type="image/webp">
+      <img id="lbImg" src="${w.img}" alt="${w.title}">
+    </picture>
+  `;
   document.getElementById('lbTitle').textContent = w.title;
   document.getElementById('lbCounter').textContent = `${currentPhotoIdx+1} / ${photoIndices.length}`;
 }
@@ -956,6 +1002,56 @@ if('serviceWorker' in navigator){
     });
   });
 }
+
+/* ===== 防止 iframe 嵌入 ===== */
+(function preventIframeEmbed(){
+  try{
+    if(window.top !== window.self){
+      // 被嵌入到 iframe 中，跳出
+      window.top.location = window.self.location;
+    }
+  }catch(e){
+    // 跨域访问被阻止，说明被嵌入到不同域名的 iframe 中
+    // 显示提示信息
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#faf8f5;color:#2c2420;font-family:sans-serif;text-align:center;padding:20px;"><div><h1 style="font-size:24px;margin-bottom:12px;">无法访问</h1><p style="color:#6b5e54;margin-bottom:20px;">本网站不允许在 iframe 中嵌入访问。</p><a href="' + window.location.href + '" target="_blank" style="display:inline-block;padding:12px 24px;background:#b08968;color:#fff;text-decoration:none;border-radius:8px;">在新窗口打开</a></div></div>';
+  }
+})();
+
+/* ===== 鼠标跟随光效 ===== */
+(function initCursorGlow(){
+  const glow = document.getElementById('cursorGlow');
+  if(!glow) return;
+
+  let mouseX = 0, mouseY = 0;
+  let glowX = 0, glowY = 0;
+  let rafId = null;
+
+  // 平滑跟随动画
+  function animateGlow(){
+    glowX += (mouseX - glowX) * 0.12;
+    glowY += (mouseY - glowY) * 0.12;
+    glow.style.left = glowX + 'px';
+    glow.style.top = glowY + 'px';
+    rafId = requestAnimationFrame(animateGlow);
+  }
+
+  document.addEventListener('mousemove',(e)=>{
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if(!glow.classList.contains('active')){
+      glow.classList.add('active');
+    }
+    if(!rafId) animateGlow();
+  });
+
+  // 鼠标离开窗口时隐藏光效
+  document.addEventListener('mouseleave',()=>{
+    glow.classList.remove('active');
+  });
+  document.addEventListener('mouseenter',()=>{
+    glow.classList.add('active');
+  });
+})();
 
 /* ===== 初始化 ===== */
 function init(){
