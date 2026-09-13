@@ -250,90 +250,41 @@ body{
 .stat b{display:block;font-family:'Noto Serif SC',serif;font-size:36px;font-weight:700;color:var(--ink)}
 .stat span{font-size:12px;color:var(--ink-faint);letter-spacing:2px}
 
-/* ===== 精选照片轮播 ===== */
+/* ===== 精选照片网格 ===== */
 .featured-section{max-width:1200px;margin:0 auto;padding:40px 32px 60px}
 .section-head{text-align:center;margin-bottom:32px}
 .section-head .kicker{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:500}
 .section-head h2{font-size:36px;font-weight:700;font-family:'Noto Serif SC',serif;color:var(--ink);margin-bottom:12px}
 .section-head p{font-size:15px;color:var(--muted);max-width:500px;margin:0 auto}
 
-.featured-carousel{
-  position:relative;
-  width:100%;
+.featured-grid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:16px;
   max-width:900px;
   margin:0 auto 48px;
-  aspect-ratio:16/9;
+}
+.featured-item{
+  position:relative;
+  aspect-ratio:4/3;
   overflow:hidden;
-  border-radius:16px;
+  border-radius:12px;
   background:var(--card-bg);
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  transition:transform 0.4s, box-shadow 0.4s;
+}
+.featured-item:hover{
+  transform:translateY(-4px);
   box-shadow:var(--shadow-lg);
 }
-.carousel-track{
-  display:flex;
-  width:100%;
-  height:100%;
-  transition:transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
-}
-.carousel-slide{
-  min-width:100%;
-  height:100%;
-  position:relative;
-  cursor:pointer;
-}
-.carousel-slide picture{width:100%;height:100%;display:block}
-.carousel-slide img{
+.featured-item picture{width:100%;height:100%;display:block}
+.featured-item img{
   width:100%;height:100%;object-fit:cover;
   opacity:0;transition:opacity 0.5s;
 }
-.carousel-slide img.loaded{opacity:1}
-.carousel-slide:hover img{transform:scale(1.03);transition:transform 0.6s}
-
-.carousel-btn{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  width:48px;height:48px;
-  border-radius:50%;
-  border:none;
-  background:rgba(0,0,0,0.4);
-  backdrop-filter:blur(8px);
-  color:#fff;
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:all 0.3s;
-  z-index:10;
-  opacity:0;
-}
-.featured-carousel:hover .carousel-btn{opacity:1}
-.carousel-btn:hover{background:rgba(0,0,0,0.6);transform:translateY(-50%) scale(1.1)}
-.carousel-btn svg{width:24px;height:24px}
-.carousel-prev{left:16px}
-.carousel-next{right:16px}
-
-.carousel-dots{
-  position:absolute;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  gap:8px;
-  z-index:10;
-}
-.carousel-dot{
-  width:10px;height:10px;
-  border-radius:50%;
-  border:none;
-  background:rgba(255,255,255,0.4);
-  cursor:pointer;
-  transition:all 0.3s;
-  padding:0;
-}
-.carousel-dot.active{
-  background:#fff;
-  width:28px;
-  border-radius:5px;
-}
-.carousel-dot:hover{background:rgba(255,255,255,0.7)}
+.featured-item img.loaded{opacity:1}
+.featured-item:hover img{transform:scale(1.05);transition:transform 0.6s}
 
 .section-more{text-align:center}
 .section-more .btn{padding:14px 36px;font-size:15px}
@@ -564,14 +515,8 @@ body{
   .featured-section{padding:24px 16px 40px}
   .section-head{margin-bottom:24px}
   .section-head h2{font-size:28px}
-  .featured-carousel{aspect-ratio:4/3;margin-bottom:32px;border-radius:12px}
-  .carousel-btn{width:40px;height:40px;opacity:0.7}
-  .carousel-btn svg{width:20px;height:20px}
-  .carousel-prev{left:8px}
-  .carousel-next{right:8px}
-  .carousel-dots{bottom:12px;gap:6px}
-  .carousel-dot{width:8px;height:8px}
-  .carousel-dot.active{width:20px}
+  .featured-grid{gap:12px;margin-bottom:32px}
+  .featured-item{border-radius:8px}
 }
 @media(max-width:480px){
   .nav{padding:0 8px;gap:4px}
@@ -635,23 +580,14 @@ body{
     </div>
   </div>
 
-  <!-- ===== 精选照片轮播 ===== -->
+  <!-- ===== 精选照片网格 ===== -->
   <section class="featured-section">
     <div class="section-head">
       <div class="kicker">Featured</div>
       <h2>精选作品</h2>
-      <p>精选部分摄影作品，每10秒自动切换，点击查看大图</p>
+      <p>精选部分摄影作品，点击查看大图</p>
     </div>
-    <div class="featured-carousel" id="featuredCarousel">
-      <div class="carousel-track" id="carouselTrack"></div>
-      <button class="carousel-btn carousel-prev" onclick="prevSlide()" title="上一张">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <button class="carousel-btn carousel-next" onclick="nextSlide()" title="下一张">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-      <div class="carousel-dots" id="carouselDots"></div>
-    </div>
+    <div class="featured-grid" id="featuredGrid"></div>
     <div class="section-more">
       <button class="btn btn-outline" onclick="go('photos')">查看更多作品 →</button>
     </div>
@@ -780,91 +716,27 @@ function filterPhoto(cat){
   renderPhotos();
 }
 
-/* ===== 渲染：首页精选照片轮播 ===== */
-let currentSlide = 0;
-let slideInterval = null;
+/* ===== 渲染：首页精选照片网格 ===== */
 let featuredWorks = [];
 
 function renderFeatured(){
-  // 精选6张照片（每个分类选2张）
-  const featuredIndices = [0, 1, 3, 4, 8, 9]; // photo1, photo2, photo4, photo5, photo9, photo10
+  // 精选4张照片（产品2张、活动1张、食品1张）
+  const featuredIndices = [0, 1, 3, 8]; // photo1, photo2, photo4, photo9
   featuredWorks = featuredIndices.map(i => works[i]).filter(w => w && w.type === 'photo');
 
-  // 渲染幻灯片
-  document.getElementById('carouselTrack').innerHTML = featuredWorks.map((w, idx) => {
+  // 渲染网格
+  document.getElementById('featuredGrid').innerHTML = featuredWorks.map((w, idx) => {
     const webpSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.webp');
     const avifSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.avif');
     const workIndex = works.indexOf(w);
-    return `<div class="carousel-slide" onclick="openWork('photo',${workIndex})">
+    return `<div class="featured-item" onclick="openWork('photo',${workIndex})">
       <picture>
         <source srcset="${avifSrc}" type="image/avif">
         <source srcset="${webpSrc}" type="image/webp">
-        <img src="${w.img}" alt="${w.title}" loading="${idx === 0 ? 'eager' : 'lazy'}" onload="this.classList.add('loaded')">
+        <img src="${w.img}" alt="${w.title}" loading="lazy" onload="this.classList.add('loaded')">
       </picture>
     </div>`;
   }).join('');
-
-  // 渲染指示器
-  document.getElementById('carouselDots').innerHTML = featuredWorks.map((w, idx) => {
-    return `<button class="carousel-dot ${idx === 0 ? 'active' : ''}" onclick="goToSlide(${idx})" title="${w.title}"></button>`;
-  }).join('');
-
-  // 启动自动轮播
-  startAutoSlide();
-
-  // 鼠标悬停时暂停
-  const carousel = document.getElementById('featuredCarousel');
-  carousel.addEventListener('mouseenter', stopAutoSlide);
-  carousel.addEventListener('mouseleave', startAutoSlide);
-}
-
-// 下一张
-function nextSlide(){
-  currentSlide = (currentSlide + 1) % featuredWorks.length;
-  updateSlide();
-}
-
-// 上一张
-function prevSlide(){
-  currentSlide = (currentSlide - 1 + featuredWorks.length) % featuredWorks.length;
-  updateSlide();
-}
-
-// 跳转到指定幻灯片
-function goToSlide(index){
-  currentSlide = index;
-  updateSlide();
-  resetAutoSlide();
-}
-
-// 更新幻灯片位置
-function updateSlide(){
-  const track = document.getElementById('carouselTrack');
-  track.style.transform = `translateX(-${currentSlide * 100}%)`;
-
-  // 更新指示器
-  document.querySelectorAll('.carousel-dot').forEach((dot, idx) => {
-    dot.classList.toggle('active', idx === currentSlide);
-  });
-}
-
-// 启动自动轮播（10秒切换）
-function startAutoSlide(){
-  stopAutoSlide();
-  slideInterval = setInterval(nextSlide, 10000);
-}
-
-// 停止自动轮播
-function stopAutoSlide(){
-  if(slideInterval){
-    clearInterval(slideInterval);
-    slideInterval = null;
-  }
-}
-
-// 重置自动轮播（手动切换后重新计时）
-function resetAutoSlide(){
-  startAutoSlide();
 }
 
 /* ===== 渲染：图片画廊（带懒加载+模糊占位） ===== */
