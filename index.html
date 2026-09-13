@@ -484,8 +484,11 @@ body{
       </button>
       <div class="search-results" id="searchResults"></div>
     </div>
-    <button class="icon-btn" onclick="toggleTheme()" title="切换深色模式">
+    <button class="icon-btn" onclick="toggleTheme()" title="切换深色/浅色模式">
       <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <button class="icon-btn" onclick="setAutoTheme()" title="自动模式（根据时间自动切换）">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     </button>
   </div>
 </nav>
@@ -785,9 +788,43 @@ function toggleTheme(){
   const next = current === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', next);
   localStorage.setItem('theme', next);
+  localStorage.setItem('theme-manual', 'true'); // 标记用户手动选择过
   updateThemeIcon(next);
   // 更新 PWA 主题色
   document.querySelector('meta[name="theme-color"]').setAttribute('content', next === 'dark' ? '#1a1614' : '#faf8f5');
+}
+
+// 判断是否是夜间时间（20:00 - 07:00）
+function isNightTime(){
+  const hour = new Date().getHours();
+  return hour >= 20 || hour < 7;
+}
+
+// 根据时间自动切换主题（仅当用户没有手动选择过时）
+function autoThemeByTime(){
+  if(localStorage.getItem('theme-manual') === 'true') return; // 用户手动选择过，不自动切换
+  const shouldDark = isNightTime();
+  const theme = shouldDark ? 'dark' : 'light';
+  const current = document.documentElement.getAttribute('data-theme');
+  if(current !== theme){
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    updateThemeIcon(theme);
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#1a1614' : '#faf8f5');
+  }
+}
+
+// 恢复自动模式（清除手动选择，根据当前时间自动切换）
+function setAutoTheme(){
+  localStorage.removeItem('theme-manual');
+  const shouldDark = isNightTime();
+  const theme = shouldDark ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  updateThemeIcon(theme);
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#1a1614' : '#faf8f5');
+  const timeStr = shouldDark ? '夜间模式（20:00-07:00）' : '日间模式（07:00-20:00）';
+  toast('已恢复自动模式，当前：' + timeStr);
 }
 
 function updateThemeIcon(theme){
@@ -802,11 +839,30 @@ function updateThemeIcon(theme){
 // 初始化主题
 (function initTheme(){
   const saved = localStorage.getItem('theme');
+  const manual = localStorage.getItem('theme-manual') === 'true';
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const theme = saved || (prefersDark ? 'dark' : 'light');
+
+  let theme;
+  if(manual && saved){
+    // 用户手动选择过，尊重用户选择
+    theme = saved;
+  } else if(isNightTime()){
+    // 夜间时间，自动深色
+    theme = 'dark';
+  } else if(prefersDark){
+    // 系统偏好深色
+    theme = 'dark';
+  } else {
+    theme = 'light';
+  }
+
   document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
   updateThemeIcon(theme);
   document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#1a1614' : '#faf8f5');
+
+  // 每分钟检查一次时间，自动切换主题（仅当用户没有手动选择过时）
+  setInterval(autoThemeByTime, 60000);
 })();
 
 /* ===== 搜索功能 ===== */
