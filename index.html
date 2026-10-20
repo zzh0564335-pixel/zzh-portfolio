@@ -726,15 +726,9 @@ function renderFeatured(){
 
   // 渲染网格
   document.getElementById('featuredGrid').innerHTML = featuredWorks.map((w, idx) => {
-    const webpSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-    const avifSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.avif');
     const workIndex = works.indexOf(w);
     return `<div class="featured-item" onclick="openWork('photo',${workIndex})">
-      <picture>
-        <source srcset="${avifSrc}" type="image/avif">
-        <source srcset="${webpSrc}" type="image/webp">
-        <img src="${w.img}" alt="${w.title}" loading="lazy" onload="this.classList.add('loaded')">
-      </picture>
+      <img src="${w.img}" alt="${w.title}" loading="lazy" onload="this.classList.add('loaded')">
     </div>`;
   }).join('');
 }
@@ -750,14 +744,8 @@ function renderPhotos(){
     return;
   }
   document.getElementById('photoGallery').innerHTML = photos.map((w,i)=>{
-    const webpSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-    const avifSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.avif');
     return `<div class="g-item" onclick="openWork('photo',${works.indexOf(w)})">
-      <picture>
-        <source srcset="${avifSrc}" type="image/avif">
-        <source srcset="${webpSrc}" type="image/webp">
-        <img src="${w.img}" alt="${w.title}" loading="lazy" onload="this.classList.add('loaded')">
-      </picture>
+      <img src="${w.img}" alt="${w.title}" loading="lazy" onload="this.classList.add('loaded')">
       <div class="info"><b>${w.title}</b><span>${w.cat}</span></div>
     </div>`;
   }).join('');
@@ -791,15 +779,9 @@ function renderVideos(){
     return;
   }
   document.getElementById('videoGrid').innerHTML = videos.map(w=>{
-    const webpSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-    const avifSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.avif');
     return `<div class="v-card" onclick="openWork('video',${works.indexOf(w)})">
       <div class="v-thumb">
-        <picture>
-          <source srcset="${avifSrc}" type="image/avif">
-          <source srcset="${webpSrc}" type="image/webp">
-          <img src="${w.img}" alt="${w.title}" loading="lazy" onload="this.classList.add('loaded')">
-        </picture>
+        <img src="${w.img}" alt="${w.title}" loading="lazy" onload="this.classList.add('loaded')">
         <div class="v-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
         <span class="v-dur">${w.dur}</span>
       </div>
@@ -831,14 +813,8 @@ function openWork(type, idx){
 function showPhoto(){
   const idx = photoIndices[currentPhotoIdx];
   const w = works[idx];
-  const webpSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-  const avifSrc = w.img.replace(/\.(jpg|jpeg|png)$/i, '.avif');
   document.getElementById('lbImgWrap').innerHTML = `
-    <picture>
-      <source srcset="${avifSrc}" type="image/avif">
-      <source srcset="${webpSrc}" type="image/webp">
-      <img id="lbImg" src="${w.img}" alt="${w.title}">
-    </picture>
+    <img id="lbImg" src="${w.img}" alt="${w.title}">
   `;
   document.getElementById('lbTitle').textContent = w.title;
   document.getElementById('lbCounter').textContent = `${currentPhotoIdx+1} / ${photoIndices.length}`;
