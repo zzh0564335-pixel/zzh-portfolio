@@ -549,6 +549,10 @@ function getSts(){
 function hmacSha1B64(key, message){
   return new Promise((resolve, reject)=>{
     try{
+      if(!window.crypto || !window.crypto.subtle){
+        reject(new Error('当前页面不是 HTTPS 安全环境，浏览器禁用了签名功能。请使用 https://www.zzh994.ltd/admin.html 访问后台后再上传'));
+        return;
+      }
       const enc = new TextEncoder();
       crypto.subtle.importKey('raw', enc.encode(key), {name:'HMAC', hash:'SHA-1'}, false, ['sign'])
         .then(keyBuf => crypto.subtle.sign('HMAC', keyBuf, enc.encode(message)))
@@ -676,6 +680,17 @@ function resetUploadForm(){
 
 /* ===== 启动 ===== */
 initTheme();
+// 非安全环境检测：crypto.subtle 仅在 HTTPS / localhost 可用，http 公网访问会导致签名上传失败
+(function(){
+  try{
+    if(!window.isSecureContext){
+      const tip = document.createElement('div');
+      tip.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#b91c1c;color:#fff;font-size:13px;text-align:center;padding:8px 12px;';
+      tip.textContent = '当前为非安全 HTTP 环境，上传/登录可能异常。请使用 https://www.zzh994.ltd/admin.html 访问后台。';
+      document.body.appendChild(tip);
+    }
+  }catch(e){}
+})();
 if(isTokenValid()){
   enterApp();
 }else{
