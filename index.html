@@ -649,45 +649,27 @@ body{
 </footer>
 
 <script>
-/* ===== 作品数据 ===== */
-const works = [
-  // 产品摄影
-  {type:'photo', title:'产品摄影 01', cat:'产品', desc:'产品摄影作品', img:'assets/photo1.jpg'},
-  {type:'photo', title:'产品摄影 02', cat:'产品', desc:'产品摄影作品', img:'assets/photo2.jpg'},
-  {type:'photo', title:'产品摄影 03', cat:'产品', desc:'产品摄影作品', img:'assets/photo3.jpg'},
-  // 活动摄影
-  {type:'photo', title:'活动摄影 01', cat:'活动', desc:'活动摄影作品', img:'assets/photo4.jpg'},
-  {type:'photo', title:'活动摄影 02', cat:'活动', desc:'活动摄影作品', img:'assets/photo5.jpg'},
-  {type:'photo', title:'活动摄影 03', cat:'活动', desc:'活动摄影作品', img:'assets/photo6.jpg'},
-  {type:'photo', title:'活动摄影 04', cat:'活动', desc:'活动摄影作品', img:'assets/photo7.jpg'},
-  {type:'photo', title:'活动摄影 05', cat:'活动', desc:'活动摄影作品', img:'assets/photo8.jpg'},
-  {type:'photo', title:'活动摄影 06', cat:'活动', desc:'活动摄影作品', img:'assets/photo18.jpg'},
-  {type:'photo', title:'活动摄影 07', cat:'活动', desc:'活动摄影作品', img:'assets/photo19.jpg'},
-  {type:'photo', title:'活动摄影 08', cat:'活动', desc:'活动摄影作品', img:'assets/photo20.jpg'},
-  {type:'photo', title:'活动摄影 09', cat:'活动', desc:'活动摄影作品', img:'assets/photo21.jpg'},
-  {type:'photo', title:'活动摄影 10', cat:'活动', desc:'活动摄影作品', img:'assets/photo22.jpg'},
-  {type:'photo', title:'活动摄影 11', cat:'活动', desc:'活动摄影作品', img:'assets/photo23.jpg'},
-  {type:'photo', title:'活动摄影 12', cat:'活动', desc:'活动摄影作品', img:'assets/photo24.jpg'},
-  // 食品摄影
-  {type:'photo', title:'食品摄影 01', cat:'食品', desc:'食品摄影作品', img:'assets/photo9.jpg'},
-  {type:'photo', title:'食品摄影 02', cat:'食品', desc:'食品摄影作品', img:'assets/photo10.jpg'},
-  {type:'photo', title:'食品摄影 03', cat:'食品', desc:'食品摄影作品', img:'assets/photo11.jpg'},
-  {type:'photo', title:'食品摄影 04', cat:'食品', desc:'食品摄影作品', img:'assets/photo12.jpg'},
-  {type:'photo', title:'食品摄影 05', cat:'食品', desc:'食品摄影作品', img:'assets/photo13.jpg'},
-  {type:'photo', title:'食品摄影 06', cat:'食品', desc:'食品摄影作品', img:'assets/photo14.jpg'},
-  {type:'photo', title:'食品摄影 07', cat:'食品', desc:'食品摄影作品', img:'assets/photo15.jpg'},
-  {type:'photo', title:'食品摄影 08', cat:'食品', desc:'食品摄影作品', img:'assets/photo16.jpg'},
-  {type:'photo', title:'食品摄影 09', cat:'食品', desc:'食品摄影作品', img:'assets/photo17.jpg'},
-  // 视频作品
-  {type:'video', title:'卸妆油护肤产品', cat:'护肤产品', desc:'卸妆油产品展示与使用教程', img:'assets/video1.jpg', dur:'03:15', video:'https://www.bilibili.com/video/BV1zEY96vEH1/'},
-  {type:'video', title:'防晒产品', cat:'护肤产品', desc:'防晒产品测评与推荐', img:'assets/video2.jpg', dur:'02:48', video:'https://www.bilibili.com/video/BV1zEY96vEMz/'},
-  {type:'video', title:'洋甘菊护肤产品', cat:'护肤产品', desc:'洋甘菊护肤产品介绍', img:'assets/video3.jpg', dur:'04:02', video:'https://www.bilibili.com/video/BV1zEY96vEfc/'},
-  {type:'video', title:'韩束精华液护肤品', cat:'护肤产品', desc:'韩束精华液产品测评', img:'assets/video4.jpg', dur:'03:36', video:'https://www.bilibili.com/video/BV1znY96PEAR/'},
-  {type:'video', title:'燕窝胶原蛋白内调产品', cat:'食品产品', desc:'燕窝胶原蛋白内调产品介绍', img:'assets/video5.jpg', dur:'05:12', video:'https://www.bilibili.com/video/BV1zEY96vEZZ/'},
-  {type:'video', title:'盐津铺子果冻产品', cat:'食品产品', desc:'盐津铺子果冻产品测评', img:'assets/video6.jpg', dur:'02:24', video:'https://www.bilibili.com/video/BV1fnY96PE5P/'},
-  {type:'video', title:'盐津铺子素毛肚', cat:'食品产品', desc:'盐津铺子素毛肚零食推荐', img:'assets/video7.jpg', dur:'01:58', video:'https://www.bilibili.com/video/BV1BnY96PEQN/'},
-  {type:'video', title:'大魔王线下活动', cat:'活动记录', desc:'大魔王线下活动精彩记录', img:'assets/video8.jpg', dur:'06:30', video:'https://www.bilibili.com/video/BV1znY96PEGh/'},
-];
+/* ===== 作品数据（从 OSS data.json 动态加载） ===== */
+const DATA_URL = 'https://zzh994-works.oss-cn-shenzhen.aliyuncs.com/data.json';
+const works = [];
+
+async function loadWorks(){
+  try{
+    const res = await fetch(DATA_URL, {cache: 'no-store'});
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    works.length = 0;
+    works.push(...(Array.isArray(data.works) ? data.works : []));
+    init();
+  }catch(e){
+    console.error('作品数据加载失败:', e);
+    toast('作品数据加载失败，请刷新重试');
+    // 兜底：展示空状态
+    document.getElementById('featuredGrid').innerHTML = '<div style="text-align:center;color:var(--ink-faint);padding:40px 0;font-size:14px;grid-column:1/-1;">暂无精选作品</div>';
+    document.getElementById('photoGallery').innerHTML = '<div style="text-align:center;color:var(--ink-faint);padding:60px 0;font-size:14px;">图片加载失败，请检查网络</div>';
+    document.getElementById('videoGrid').innerHTML = '<div style="text-align:center;color:var(--ink-faint);padding:60px 0;font-size:14px;">视频加载失败，请检查网络</div>';
+  }
+}
 
 /* ===== 路由切换 ===== */
 function go(view){
@@ -720,9 +702,11 @@ function filterPhoto(cat){
 let featuredWorks = [];
 
 function renderFeatured(){
-  // 精选4张照片（产品2张、活动1张、食品1张）
-  const featuredIndices = [0, 1, 3, 8]; // photo1, photo2, photo4, photo9
-  featuredWorks = featuredIndices.map(i => works[i]).filter(w => w && w.type === 'photo');
+  // 精选 data.json 中标记 featured 的照片，最多4张；不足则按前4张照片兜底
+  let featuredWorks = works.filter(w=>w.type==='photo' && w.featured).slice(0,4);
+  if(featuredWorks.length === 0){
+    featuredWorks = works.filter(w=>w.type==='photo').slice(0,4);
+  }
 
   // 渲染网格
   document.getElementById('featuredGrid').innerHTML = featuredWorks.map((w, idx) => {
@@ -1124,7 +1108,8 @@ function init(){
   renderVideos();
 }
 
-init();
+// 启动：从 OSS 加载作品数据（加载成功后 init 渲染）
+loadWorks();
 </script>
 </body>
 </html>

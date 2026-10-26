@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZZH 作品后台管理</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+:root{
+  --bg:#faf8f5;
+  --bg-soft:#f3efe9;
+  --ink:#2c2420;
+  --ink-soft:#6b5e54;
+  --ink-faint:#a89a8e;
+  --accent:#b08968;
+  --accent-soft:#d4b896;
+  --card:#ffffff;
+  --border:#e8e0d6;
+  --danger:#c0392b;
+  --ok:#2e7d32;
+  --radius:12px;
+  --shadow:0 4px 24px rgba(44,36,32,0.08);
+}
+[data-theme="dark"]{
+  --bg:#1a1614; --bg-soft:#241f1c; --ink:#f0ebe4; --ink-soft:#b8ada0;
+  --ink-faint:#7a6f64; --accent:#d4b896; --accent-soft:#b08968;
+  --card:#2a2420; --border:#3a322c;
+  --shadow:0 4px 24px rgba(0,0,0,0.3);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Noto Sans SC','Segoe UI',sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.6;
+  transition:background .35s,color .35s;
+}
+a{color:var(--accent);text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
+
+/* 顶栏 */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;background:var(--card);border-bottom:1px solid var(--border);
+}
+.topbar h1{font-size:18px;font-weight:700}
+.topbar .sub{font-size:12px;color:var(--ink-faint);margin-top:2px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.theme-btn{
+  background:none;border:1px solid var(--border);border-radius:8px;
+  width:34px;height:34px;font-size:16px;color:var(--ink-soft);
+}
+.logout-btn{
+  background:none;border:1px solid var(--border);border-radius:8px;
+  padding:7px 14px;font-size:13px;color:var(--ink-soft);
+}
+.logout-btn:hover{color:var(--danger);border-color:var(--danger)}
+
+/* 登录页 */
+.login-wrap{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.login-card{
+  width:100%;max-width:380px;background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:40px 32px;box-shadow:var(--shadow);
+}
+.login-card h2{font-size:22px;text-align:center;margin-bottom:8px}
+.login-card p{font-size:13px;color:var(--ink-faint);text-align:center;margin-bottom:28px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:6px}
+.field input,.field select,.field textarea{
+  width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+  background:var(--bg-soft);outline:none;transition:border-color .2s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:60px}
+.btn{
+  display:inline-block;padding:11px 24px;border:none;border-radius:8px;
+  font-size:14px;font-weight:600;color:#fff;background:var(--accent);
+  transition:opacity .2s;
+}
+.btn:hover{opacity:.88}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-block{width:100%}
+.btn-ghost{background:var(--bg-soft);color:var(--ink-soft);border:1px solid var(--border)}
+.btn-danger{background:var(--danger)}
+.btn-small{padding:6px 12px;font-size:12px;border-radius:6px}
+
+/* 主内容 */
+.container{max-width:1100px;margin:0 auto;padding:24px 24px 80px}
+.toolbar{
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:20px;
+}
+.toolbar .seg{
+  display:flex;background:var(--bg-soft);border-radius:10px;padding:3px;gap:2px;
+}
+.toolbar .seg button{
+  border:none;background:none;padding:8px 18px;border-radius:8px;
+  font-size:14px;color:var(--ink-soft);
+}
+.toolbar .seg button.active{background:var(--card);color:var(--ink);box-shadow:0 1px 6px rgba(0,0,0,.06);font-weight:600}
+.toolbar .spacer{flex:1}
+.refresh-btn{
+  background:none;border:1px solid var(--border);border-radius:8px;
+  padding:8px 14px;font-size:13px;color:var(--ink-soft);
+}
+
+/* 上传面板 */
+.upload-panel{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;margin-bottom:24px;box-shadow:var(--shadow);
+  display:none;
+}
+.upload-panel.open{display:block}
+.upload-panel h3{font-size:15px;margin-bottom:16px}
+.upload-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.drop-zone{
+  grid-column:1/-1;border:2px dashed var(--border);border-radius:10px;
+  padding:28px;text-align:center;color:var(--ink-faint);font-size:13px;
+  transition:border-color .2s,background .2s;cursor:pointer;
+}
+.drop-zone.hover{border-color:var(--accent);background:var(--bg-soft)}
+.drop-zone img{max-width:100%;max-height:160px;border-radius:6px;margin-bottom:8px}
+.drop-zone .file-name{color:var(--ink-soft);font-size:12px;margin-top:6px;word-break:break-all}
+.upload-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.progress{
+  margin-top:14px;height:6px;background:var(--bg-soft);border-radius:4px;overflow:hidden;display:none;
+}
+.progress.show{display:block}
+.progress .bar{height:100%;width:0;background:var(--accent);transition:width .3s}
+.upload-status{font-size:13px;margin-top:10px;display:none}
+.upload-status.show{display:block}
+.upload-status.err{color:var(--danger)}
+.upload-status.ok{color:var(--ok)}
+
+/* 作品列表 */
+.list-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin:8px 0 12px;
+}
+.list-head h2{font-size:16px}
+.list-head .count{font-size:12px;color:var(--ink-faint)}
+.work-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.work-card{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;
+}
+.work-card .thumb{aspect-ratio:4/3;background:var(--bg-soft);overflow:hidden}
+.work-card .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.work-card .body{padding:10px 12px;flex:1}
+.work-card .title{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.work-card .meta{font-size:11px;color:var(--ink-faint);margin-top:4px}
+.work-card .tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.tag{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg-soft);color:var(--ink-soft)}
+.tag.cat{background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
+.work-card .ops{display:flex;gap:6px;padding:0 12px 10px}
+.work-card .ops .btn-small{flex:1}
+
+/* 提示 */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:var(--bg);padding:11px 22px;border-radius:8px;
+  font-size:13px;opacity:0;pointer-events:none;transition:all .3s;z-index:200;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.empty{text-align:center;color:var(--ink-faint);padding:60px 0;font-size:14px}
+
+@media (max-width:640px){
+  .container{padding:16px 16px 60px}
+  .work-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .topbar{padding:12px 16px}
+}
+</style>
+</head>
+<body data-theme="light">
+
+<!-- 顶栏（登录后显示） -->
+<div class="topbar" id="topbar" style="display:none">
+  <div>
+    <h1>ZZH 作品后台</h1>
+    <div class="sub" id="topbarSub">未登录</div>
+  </div>
+  <div class="topbar-right">
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="切换主题">🌙</button>
+    <button class="logout-btn" onclick="logout()">退出登录</button>
+  </div>
+</div>
+
+<!-- 登录页 -->
+<div class="login-wrap" id="loginView">
+  <div class="login-card">
+    <h2>🔒 后台管理</h2>
+    <p>请输入管理密码后上传作品</p>
+    <div class="field">
+      <label>管理密码</label>
+      <input type="password" id="passwordInput" placeholder="请输入密码" autocomplete="current-password">
+    </div>
+    <button class="btn btn-block" id="loginBtn" onclick="doLogin()">登 录</button>
+  </div>
+</div>
+
+<!-- 主界面 -->
+<div class="container" id="mainView" style="display:none">
+  <div class="toolbar">
+    <div class="seg">
+      <button id="segPhoto" class="active" onclick="switchTab('photo')">图片作品</button>
+      <button id="segVideo" onclick="switchTab('video')">视频作品</button>
+    </div>
+    <div class="spacer"></div>
+    <button class="refresh-btn" onclick="loadWorks()">刷新列表</button>
+    <button class="btn" onclick="toggleUpload()">＋ 上传作品</button>
+  </div>
+
+  <!-- 上传面板 -->
+  <div class="upload-panel" id="uploadPanel">
+    <h3 id="uploadTitle">上传图片作品</h3>
+    <div class="upload-grid">
+      <div class="field">
+        <label>作品类型</label>
+        <select id="upType" onchange="onTypeChange()">
+          <option value="photo">图片</option>
+          <option value="video">视频</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>分类</label>
+        <select id="upCat"></select>
+      </div>
+      <div class="field">
+        <label>标题</label>
+        <input type="text" id="upTitle" placeholder="作品标题">
+      </div>
+      <div class="field">
+        <label>描述</label>
+        <input type="text" id="upDesc" placeholder="一句话描述（可选）">
+      </div>
+      <div class="field" id="videoField1" style="display:none">
+        <label>B 站视频链接</label>
+        <input type="text" id="upVideo" placeholder="https://www.bilibili.com/video/BV...">
+      </div>
+      <div class="field" id="videoField2" style="display:none">
+        <label>时长</label>
+        <input type="text" id="upDur" placeholder="如 03:15（可选）">
+      </div>
+    </div>
+    <div class="drop-zone" id="dropZone">
+      <p>点击选择图片，或拖拽图片到此处</p>
+      <p style="font-size:12px;margin-top:6px;color:var(--ink-faint)">支持 JPG / PNG / WebP，建议尺寸 ≥ 1200px</p>
+      <img id="dropPreview" style="display:none" alt="预览">
+      <div class="file-name" id="dropName"></div>
+    </div>
+    <div class="upload-actions">
+      <button class="btn" id="doUploadBtn" onclick="doUpload()" disabled>开始上传</button>
+      <button class="btn btn-ghost" onclick="toggleUpload(false)">取消</button>
+    </div>
+    <div class="progress" id="uploadProgress"><div class="bar" id="uploadBar"></div></div>
+    <div class="upload-status" id="uploadStatus"></div>
+  </div>
+
+  <div class="list-head">
+    <h2 id="listTitle">图片作品</h2>
+    <span class="count" id="listCount"></span>
+  </div>
+  <div class="work-grid" id="workGrid"></div>
+  <div class="empty" id="emptyTip" style="display:none">暂无作品，点击右上角"上传作品"添加</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== 配置 ===== */
+const API_BASE   = 'https://zzh-works-admin-zzh-works-admin-ligofmepmv.cn-shenzhen.fcapp.run';
+const DATA_URL   = 'https://zzh994-works.oss-cn-shenzhen.aliyuncs.com/data.json';
+const OSS_HOST   = 'https://zzh994-works.oss-cn-shenzhen.aliyuncs.com';
+const PHOTO_CATS = ['产品','活动','食品'];
+const VIDEO_CATS = ['护肤产品','食品产品','活动记录'];
+
+let token = localStorage.getItem('admin_token') || '';
+let tokenExp = parseInt(localStorage.getItem('admin_token_exp') || '0', 10);
+let works = [];
+let currentTab = 'photo';
+let currentCat = '全部';
+let selectedFile = null;
+let stsCache = null;
+
+/* ===== 通用 ===== */
+function toast(msg, isErr){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isErr ? 'var(--danger)' : 'var(--ink)';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+function isTokenValid(){
+  return token && tokenExp > Date.now() / 1000;
+}
+
+/* ===== 主题 ===== */
+function initTheme(){
+  const saved = localStorage.getItem('admin_theme');
+  const dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
+  document.getElementById('themeBtn').textContent = dark ? '☀️' : '🌙';
+}
+function toggleTheme(){
+  const cur = document.body.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  localStorage.setItem('admin_theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
+}
+
+/* ===== 登录 ===== */
+async function doLogin(){
+  const pwd = document.getElementById('passwordInput').value.trim();
+  if(!pwd){ toast('请输入密码', true); return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = '登录中...';
+  try{
+    const res = await fetch(API_BASE + '/login', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:pwd})
+    });
+    const data = await res.json();
+    if(!res.ok || !data.token){
+      throw new Error(data.error || '登录失败');
+    }
+    token = data.token;
+    tokenExp = Math.floor(Date.now()/1000) + (data.expires_in || 7200);
+    localStorage.setItem('admin_token', token);
+    localStorage.setItem('admin_token_exp', String(tokenExp));
+    document.getElementById('passwordInput').value = '';
+    enterApp();
+    toast('登录成功');
+  }catch(e){
+    toast(e.message || '登录失败', true);
+  }finally{
+    btn.disabled = false; btn.textContent = '登 录';
+  }
+}
+
+function logout(){
+  token = ''; tokenExp = 0;
+  localStorage.removeItem('admin_token');
+  localStorage.removeItem('admin_token_exp');
+  location.reload();
+}
+
+function enterApp(){
+  document.getElementById('loginView').style.display = 'none';
+  document.getElementById('mainView').style.display = 'block';
+  document.getElementById('topbar').style.display = 'flex';
+  document.getElementById('topbarSub').textContent = '已登录 · 2 小时有效';
+  initUploadForm();
+  loadWorks();
+}
+
+/* ===== 加载作品列表 ===== */
+async function loadWorks(){
+  try{
+    const res = await fetch(DATA_URL, {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    works = Array.isArray(data.works) ? data.works : [];
+    renderList();
+    toast('列表已刷新');
+  }catch(e){
+    toast('加载作品失败：' + e.message, true);
+    works = [];
+    renderList();
+  }
+}
+
+function renderList(){
+  const type = currentTab;
+  let list = works.filter(w=>w.type === type);
+  if(currentCat !== '全部'){
+    list = list.filter(w=>w.cat === currentCat);
+  }
+  document.getElementById('listTitle').textContent = type === 'photo' ? '图片作品' : '视频作品';
+  document.getElementById('listCount').textContent = list.length + ' 个';
+  document.getElementById('emptyTip').style.display = list.length ? 'none' : 'block';
+
+  document.getElementById('workGrid').innerHTML = list.map((w,i)=>{
+    const globalIdx = works.indexOf(w);
+    const catTag = w.cat ? `<span class="tag cat">${w.cat}</span>` : '';
+    const featTag = w.featured ? '<span class="tag">精选</span>' : '';
+    const durTag = w.dur ? `<span class="tag">${w.dur}</span>` : '';
+    return `
+    <div class="work-card">
+      <div class="thumb"><img src="${w.img}" alt="${w.title}" loading="lazy"></div>
+      <div class="body">
+        <div class="title">${esc(w.title)}</div>
+        <div class="meta">${w.type === 'photo' ? '图片' : '视频'}${w.desc ? ' · ' + esc(w.desc) : ''}</div>
+        <div class="tags">${catTag}${featTag}${durTag}</div>
+      </div>
+      <div class="ops">
+        <button class="btn-small btn-ghost" onclick="editWork(${globalIdx})">编辑</button>
+        <button class="btn-small btn-danger" onclick="removeWork(${globalIdx})">删除</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ===== Tab / 分类 ===== */
+function switchTab(type){
+  currentTab = type;
+  currentCat = '全部';
+  document.getElementById('segPhoto').classList.toggle('active', type==='photo');
+  document.getElementById('segVideo').classList.toggle('active', type==='video');
+  initUploadForm();
+  renderList();
+}
+
+function onTypeChange(){
+  initUploadForm();
+}
+
+/* ===== 上传 ===== */
+function initUploadForm(){
+  const type = document.getElementById('upType').value;
+  const cats = type === 'photo' ? PHOTO_CATS : VIDEO_CATS;
+  document.getElementById('upCat').innerHTML = cats.map(c=>`<option>${c}</option>`).join('');
+  document.getElementById('uploadTitle').textContent = type === 'photo' ? '上传图片作品' : '上传视频作品';
+  document.getElementById('videoField1').style.display = type === 'video' ? 'block' : 'none';
+  document.getElementById('videoField2').style.display = type === 'video' ? 'block' : 'none';
+  document.getElementById('doUploadBtn').disabled = !selectedFile;
+}
+
+function toggleUpload(open){
+  const panel = document.getElementById('uploadPanel');
+  const willOpen = open === undefined ? !panel.classList.contains('open') : open;
+  panel.classList.toggle('open', willOpen);
+  if(willOpen) initUploadForm();
+}
+
+/* 文件选择与拖拽 */
+const dropZone = document.getElementById('dropZone');
+dropZone.addEventListener('click', ()=>document.getElementById('fileInput')?.click());
+// 隐藏 file input
+const fileInput = document.createElement('input');
+fileInput.type = 'file';
+fileInput.accept = 'image/*';
+fileInput.id = 'fileInput';
+fileInput.style.display = 'none';
+dropZone.appendChild(fileInput);
+
+fileInput.addEventListener('change', ()=>handleFile(fileInput.files[0]));
+dropZone.addEventListener('dragover', e=>{e.preventDefault(); dropZone.classList.add('hover');});
+dropZone.addEventListener('dragleave', ()=>dropZone.classList.remove('hover'));
+dropZone.addEventListener('drop', e=>{
+  e.preventDefault();
+  dropZone.classList.remove('hover');
+  if(e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+
+function handleFile(file){
+  if(!file || !file.type.startsWith('image/')){
+    toast('请选择图片文件', true);
+    return;
+  }
+  if(file.size > 15 * 1024 * 1024){
+    toast('图片超过 15MB，请压缩后上传', true);
+    return;
+  }
+  selectedFile = file;
+  document.getElementById('dropName').textContent = file.name + '（' + (file.size/1024/1024).toFixed(1) + 'MB）';
+  const img = document.getElementById('dropPreview');
+  img.src = URL.createObjectURL(file);
+  img.style.display = 'block';
+  document.getElementById('doUploadBtn').disabled = false;
+}
+
+/* 上传主流程 */
+async function doUpload(){
+  if(!selectedFile){ toast('请先选择图片', true); return; }
+  const type = document.getElementById('upType').value;
+  const cat = document.getElementById('upCat').value;
+  const title = document.getElementById('upTitle').value.trim() || (type === 'photo' ? '新摄影作品' : '新视频作品');
+  const desc = document.getElementById('upDesc').value.trim();
+  const videoUrl = document.getElementById('upVideo').value.trim();
+  const dur = document.getElementById('upDur').value.trim();
+
+  if(type === 'video' && !videoUrl){
+    toast('视频作品需要填写 B 站链接', true);
+    return;
+  }
+
+  const btn = document.getElementById('doUploadBtn');
+  btn.disabled = true;
+  showProgress(3);
+  try{
+    // 1. 获取 STS 临时凭证
+    const sts = await getSts();
+    // 2. 直传 OSS
+    showProgress(20);
+    const key = await uploadToOSS(selectedFile, type, sts);
+    showProgress(85);
+    const imgUrl = OSS_HOST + '/' + key;
+    // 3. 更新 data.json
+    const item = {type, title, cat, desc: desc || undefined, img: imgUrl};
+    if(type === 'video'){ item.video = videoUrl; if(dur) item.dur = dur; }
+    await saveWorks([...works, item]);
+    showProgress(100);
+    showStatus('上传成功！', false);
+    toast('上传成功');
+    selectedFile = null;
+    resetUploadForm();
+    loadWorks();
+  }catch(e){
+    showStatus('上传失败：' + e.message, true);
+    toast('上传失败：' + e.message, true);
+  }finally{
+    btn.disabled = false;
+    setTimeout(()=>{hideProgress(); hideStatus();}, 2500);
+  }
+}
+
+function getSts(){
+  return new Promise(async (resolve, reject)=>{
+    if(stsCache && stsCache.expireAt > Date.now() + 60000){
+      resolve(stsCache); return;
+    }
+    try{
+      const res = await fetch(API_BASE + '/sts', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer ' + token},
+        body:'{}'
+      });
+      const data = await res.json();
+      if(!res.ok || !data.AccessKeyId){
+        if(res.status === 401){ logout(); }
+        throw new Error(data.error || '获取上传凭证失败');
+      }
+      stsCache = Object.assign({}, data, {expireAt: Date.now() + data.expires_in * 1000});
+      resolve(stsCache);
+    }catch(e){ reject(e); }
+  });
+}
+
+/* ===== OSS 直传（原生签名，无 SDK 依赖） ===== */
+function hmacSha1B64(key, message){
+  return new Promise((resolve, reject)=>{
+    try{
+      const enc = new TextEncoder();
+      crypto.subtle.importKey('raw', enc.encode(key), {name:'HMAC', hash:'SHA-1'}, false, ['sign'])
+        .then(keyBuf => crypto.subtle.sign('HMAC', keyBuf, enc.encode(message)))
+        .then(sig => {
+          const bytes = new Uint8Array(sig);
+          let bin = '';
+          for(const b of bytes) bin += String.fromCharCode(b);
+          resolve(btoa(bin));
+        })
+        .catch(reject);
+    }catch(e){ reject(e); }
+  });
+}
+
+function uploadToOSS(file, type, sts){
+  return new Promise(async (resolve, reject)=>{
+    try{
+      const prefix = type === 'photo' ? 'photos' : 'videos';
+      const ext = (file.name.match(/\.\w+$/) || ['.jpg'])[0].toLowerCase();
+      const key = prefix + '/' + prefix.slice(0,-1) + '_' + Date.now() + ext;
+      const date = new Date().toUTCString();
+      const contentType = file.type || 'application/octet-stream';
+      const resource = '/' + sts.bucket + '/' + key;
+      // STS 场景签名：x-oss-security-token 与 x-oss-date 都属于 CanonicalizedOSSHeaders（x-oss- 前缀，字母序）
+      // 第4行 Date 字段使用 x-oss-date 的值（浏览器 XHR 无法设置 Date 头）
+      const stringToSign = 'PUT\n\n' + contentType + '\n' + date + '\n' + 'x-oss-date:' + date + '\n' + 'x-oss-security-token:' + sts.SecurityToken + '\n' + resource;
+      const signature = await hmacSha1B64(sts.AccessKeySecret, stringToSign);
+      // 虚拟主机风格 URL：https://{bucket}.{region}/{key}（region 如 oss-cn-shenzhen.aliyuncs.com）
+      const url = 'https://' + sts.bucket + '.' + sts.region + '/' + key;
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('PUT', url, true);
+      xhr.setRequestHeader('Authorization', 'OSS ' + sts.AccessKeyId + ':' + signature);
+      xhr.setRequestHeader('x-oss-security-token', sts.SecurityToken);
+      xhr.setRequestHeader('Content-Type', contentType);
+      // 注意：浏览器 XHR 禁止设置 Date 头，OSS V1 签名改用 x-oss-date（签名第4行用同一值）
+      xhr.setRequestHeader('x-oss-date', date);
+      xhr.upload.onprogress = e => {
+        if(e.lengthComputable){
+          showProgress(20 + Math.round(e.loaded / e.total * 60));
+        }
+      };
+      xhr.onload = ()=>{
+        if(xhr.status >= 200 && xhr.status < 300){
+          resolve(key);
+        }else{
+          reject(new Error('OSS 上传失败（HTTP ' + xhr.status + '）'));
+        }
+      };
+      xhr.onerror = ()=> reject(new Error('OSS 网络错误，请重试'));
+      xhr.send(file);
+    }catch(e){ reject(e); }
+  });
+}
+
+/* 保存清单（写回 OSS） */
+async function saveWorks(list){
+  const payload = {version:1, updated:new Date().toISOString().slice(0,10), works:list};
+  const res = await fetch(API_BASE + '/save-data', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer ' + token},
+    body:JSON.stringify(payload)
+  });
+  const data = await res.json();
+  if(!res.ok){
+    if(res.status === 401){ logout(); }
+    throw new Error(data.error || '保存失败');
+  }
+}
+
+/* ===== 编辑 / 删除 ===== */
+function editWork(idx){
+  const w = works[idx];
+  if(!w) return;
+  // 基础编辑：仅重新保存标题/分类（此处用 prompt 简化，后续可扩展表单）
+  const newTitle = prompt('修改标题（留空取消）：', w.title || '');
+  if(newTitle === null || newTitle === w.title) return;
+  works[idx] = Object.assign({}, w, {title: newTitle});
+  saveWorks(works).then(()=>{ loadWorks(); toast('已保存'); })
+    .catch(e=>toast('保存失败：' + e.message, true));
+}
+
+function removeWork(idx){
+  const w = works[idx];
+  if(!w) return;
+  if(!confirm('确定删除「' + w.title + '」？\n（仅从清单移除，图片文件保留在云端）')){
+    return;
+  }
+  works.splice(idx, 1);
+  saveWorks(works).then(()=>{ loadWorks(); toast('已删除'); })
+    .catch(e=>{ works.splice(idx, 0, w); toast('删除失败：' + e.message, true); });
+}
+
+/* ===== 进度/状态 ===== */
+function showProgress(p){
+  const pg = document.getElementById('uploadProgress');
+  pg.classList.add('show');
+  document.getElementById('uploadBar').style.width = p + '%';
+}
+function hideProgress(){
+  document.getElementById('uploadProgress').classList.remove('show');
+  document.getElementById('uploadBar').style.width = '0';
+}
+function showStatus(msg, isErr){
+  const s = document.getElementById('uploadStatus');
+  s.textContent = msg;
+  s.className = 'upload-status show ' + (isErr ? 'err' : 'ok');
+}
+function hideStatus(){
+  const s = document.getElementById('uploadStatus');
+  s.className = 'upload-status';
+  s.textContent = '';
+}
+function resetUploadForm(){
+  document.getElementById('upTitle').value = '';
+  document.getElementById('upDesc').value = '';
+  document.getElementById('upVideo').value = '';
+  document.getElementById('upDur').value = '';
+  document.getElementById('dropName').textContent = '';
+  document.getElementById('dropPreview').style.display = 'none';
+  document.getElementById('dropPreview').src = '';
+  fileInput.value = '';
+  document.getElementById('doUploadBtn').disabled = true;
+}
+
+/* ===== 启动 ===== */
+initTheme();
+if(isTokenValid()){
+  enterApp();
+}else{
+  document.getElementById('passwordInput').focus();
+}
+// 回车登录
+document.getElementById('passwordInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter') doLogin();
+});
+</script>
+</body>
+</html>
